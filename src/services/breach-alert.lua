@@ -14,8 +14,10 @@ local alertChannels = {
 local maximumLookupMessages = 10
 
 local getNewBreaches = function()
+	local _, lookupChannel = next(alertChannels)
+
 	local lastBreaches = { }
-	for message in channels[next(channels)]:getMessages(maximumLookupMessages):iter() do
+	for message in channels[lookupChannel]:getMessages(maximumLookupMessages):iter() do
 		if not (message.embed and message.embed.thumbnail) then break end
 		lastBreaches[message.embed.thumbnail.url] = true
 	end
