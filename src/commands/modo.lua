@@ -11,7 +11,7 @@ local discordChannels = require("../utils/discord-objects").channels
 
 return {
 	channel = {
-		[discordChannels["debug"].id] = true
+		[discordChannels["br-utils"].id] = true
 	},
 
 	syntax = "modo `[settings]` [Generator](https://lautenschlager-id.github.io/drekkemetrics.github.io/)",
