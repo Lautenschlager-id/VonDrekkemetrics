@@ -2,7 +2,7 @@ local http = require("coro-http")
 local json = require("json")
 
 local _discord = require("../discord")
-local discord, disclock = _discord.discord, _discord.disclock
+local discord, disclock, protect = _discord.discord, _discord.disclock, _discord.protect
 
 local colors = require("../utils/colors")
 local channels = require("../utils/discord-objects").channels
@@ -81,13 +81,13 @@ local getNewBreaches = function()
 	return newBreaches, totalNewBreaches
 end
 
-discord:once("ready", function()
+discord:once("ready", protect(function()
 	p("[LOAD] Data Breaches")
 	disclock:start()
 	disclock:emit("hour")
-end)
+end))
 
-disclock:on("hour", function()
+disclock:on("hour", protect(function()
 	p("[BREACHES] Checking breaches")
 	local newBreaches, totalNewBreaches = getNewBreaches()
 	if totalNewBreaches == 0 then return end
@@ -99,4 +99,4 @@ disclock:on("hour", function()
 			channel:send(newBreaches[breach])
 		end
 	end
-end)
+end))

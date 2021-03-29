@@ -1,4 +1,5 @@
-local discord = require("../discord").discord
+local _discord = require("../discord")
+local discord, protect = _discord.discord, _discord.protect
 
 local channels = {
 	-- Int Staff
@@ -6,7 +7,7 @@ local channels = {
 	["int-breach"] = "814497990948814918", -- #data-breaches
 
 	-- Br Staff
-	["br-flood"] = "826082697185198140", -- #bot-utils
+	["br-utils"] = "826082697185198140", -- #bot-utils
 
 	-- Debug
 	["debug"] = "818016844522586123", -- #von-drekkemetrics
@@ -28,10 +29,10 @@ local getChannelAndGuildObjects = function()
 	end
 end
 
-discord:once("ready", function()
+discord:once("ready", protect(function()
 	p("[LOAD] Get Channel and Guild Objects")
 	getChannelAndGuildObjects()
-end)
+end))
 
 return {
 	channels = channels,

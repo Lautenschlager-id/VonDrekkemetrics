@@ -5,17 +5,17 @@ local utils = require("./utils/utils")
 local _discord = require("./discord")
 local _forum = require("./forum")
 
-local discord, discordia = _discord.discord, _discord.discordia
+local discord, discordia, protect = _discord.discord, _discord.discordia, _discord.protect
 local forum, fromage = _forum.forum, _forum.fromage
 
-discord:once("ready", function()
+discord:once("ready", protect(function()
 	p("[DISCORD] OK")
 
 	repeat
 		forum.connect(secrets.FORUM_LOGIN, secrets.FORUM_PASSWORD)
 	until forum.isConnected()
 	p("[FORUM] OK")
-end)
+end))
 
 --[[ Services ]]--
 

@@ -48,11 +48,11 @@ local pairsByIndexes = function(list, f)
 	end
 end
 
-local sendError = function(message, command, err, description)
+local sendError = function(message, command, err, description, errColor)
 	temporaryObject[message.id] = message:reply({
 		mention = message.author,
 		embed = {
-			color = colors.fail,
+			color = errColor or colors.fail,
 			title = "Command [" .. command .. "] => " .. err,
 			description = description
 		}

@@ -6,8 +6,16 @@ local reactions = require("../utils/reactions")
 local forum = require("../forum").forum
 local activity = require("../forum/activity")
 
+local discordChannels = require("../utils/discord-objects").channels
+
 return {
-	syntax = "modo \
+	channel = {
+		[discordChannels["br-utils"].id] = true
+	},
+
+	syntax = "modo `[settings]` [Generator](https://lautenschlager-id.github.io/drekkemetrics.github.io/)",
+
+	bigSyntax = "modo \
 		      [ `nick=[ NICKNAME, TO, CHECK, ACTIVITY ]` ]*\
 		      [ `reason=[ FILTER (PATTERN), FILTER2, FILTER3#BANTYPE ]` (DEFAULT=NULL) ]\
 		      [ `month=ACTIVITY FOR THE SPECIFIC MONTH` (DEFAULT=CURRENT MONTH) ]\
@@ -26,7 +34,7 @@ return {
 
 		if not parameters or parameters == '?' then
 			return utils.sendError(message, "MODO", "Invalid or missing parameters.", "Use !" ..
-				self.syntax)
+				self.bigSyntax)
 		end
 
 		parameters = utils.getParametersTableSplitByEqualsSign(parameters)
