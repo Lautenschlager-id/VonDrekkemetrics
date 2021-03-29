@@ -3,6 +3,8 @@ local http = require("coro-http")
 local temporaryObject = require("../utils/temporaryObject")
 local colors = require("./colors")
 
+local isPlayerCache = { }
+
 string.split = function(str, separator, raw)
 	local out, counter = { }, 0
 
@@ -114,10 +116,13 @@ local getParametersTableSplitByEqualsSign = function(parameters)
 end
 
 local isPlayer = function(playerName)
-	local _, body = http.request("GET", "https://atelier801.com/profile?pr=" ..
-		encodeUrl(playerName), { { "Accept-Language", "en-US,en;q=0.9" } })
+	if not isPlayerCache[playerName] then
+		local _, body = http.request("GET", "https://atelier801.com/profile?pr=" ..
+			encodeUrl(playerName), { { "Accept-Language", "en-US,en;q=0.9" } })
 
-	return not string.find(body, "The request contains one or more invalid parameters")
+		isPlayerCache[playerName] = not string.find(body, "The request contains one or more invalid parameters")
+	end
+	return isPlayerCache[playerName]
 end
 
 local validatePlayersList = function(nicknames, defaultTag)

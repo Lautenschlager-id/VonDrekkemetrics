@@ -1,4 +1,3 @@
--- falta cancelled, overwritten
 local json = require("json")
 
 local utils = require("../utils/utils")
@@ -14,7 +13,8 @@ return {
 		[discordChannels["br-utils"].id] = true
 	},
 
-	syntax = "modo `[settings]` [Generator](https://lautenschlager-id.github.io/drekkemetrics.github.io/)",
+	syntax = "modo `[settings]` [Generator](https://lautenschlager-id.github.io/drekkemetrics.\z
+		github.io/)",
 
 	bigSyntax = "modo \
 		      [ `nick=[ NICKNAME, TO, CHECK, ACTIVITY ]` ]*\
@@ -49,6 +49,9 @@ return {
 				"The parameter 'nick' must be a table with at least one value. E.g.: [ a, b ]")
 		end
 
+		forum._BUSY = true
+		message:addReaction(reactions.idle)
+
 		local invalidName = utils.validatePlayersList(parameters.nick, "#0010")
 		if invalidName then
 			message:clearReactions()
@@ -61,9 +64,6 @@ return {
 		parameters.year = utils.getYear(parameters.year)
 
 		local firstDayRange, lastDayRange = utils.getMonthRange(parameters.month, parameters.year)
-
-		forum._BUSY = true
-		message:addReaction(reactions.idle)
 
 		local data, tmpActivity = { }
 		for member = 1, #parameters.nick do
