@@ -1,4 +1,5 @@
 -- falta cancelled, overwritten
+local json = require("json")
 
 local utils = require("../utils/utils")
 local reactions = require("../utils/reactions")
@@ -10,7 +11,7 @@ local discordChannels = require("../utils/discord-objects").channels
 
 return {
 	channel = {
-		[discordChannels["br-utils"].id] = true
+		[discordChannels["debug"].id] = true
 	},
 
 	syntax = "modo `[settings]` [Generator](https://lautenschlager-id.github.io/drekkemetrics.github.io/)",
@@ -21,6 +22,8 @@ return {
 		      [ `month=ACTIVITY FOR THE SPECIFIC MONTH` (DEFAULT=CURRENT MONTH) ]\
 		      [ `year=ACTIVITY FOR THE SPECIFIC YEAR` (DEFAULT=CURRENT YEAR) ]\
 		      [ `members=IF IT SHOULD DISPLAY DATA PER MEMBERS (TRUE/FALSE)` (DEFAULT=FALSE) ]\
+		      [ `alltime=IF THE MONTH/YEAR RANGE SHOULD NOT BE LIMITED TO 1 MONTH (TRUE/FALSE)` (DEFAULT=FALSE) ]\
+		      [ `debug=IF THE BOT SHOULD SEND AN AUDITION FILE (TRUE/FALSE)` (DEFAULT=FALSE) ]\
 		\
 		[CLICK HERE TO GENERATE THE COMMAND ONLINE](https://lautenschlager-id.github.io/drekkemetrics.github.io/)",
 
@@ -46,7 +49,9 @@ return {
 
 		local invalidName = utils.validatePlayersList(parameters.nick, "#0010")
 		if invalidName then
-			utils.sendError(message, "MODO", "Invalid value for 'nick'.", "The player '" ..
+			message:clearReactions()
+			message:addReaction(reactions.dnd)
+			return utils.sendError(message, "MODO", "Invalid value for 'nick'.", "The player '" ..
 					invalidName .. "' could not be found.")
 		end
 
@@ -76,6 +81,15 @@ return {
 		local sanctions = data.activeSanctions or { }
 		if data.terminatedSanctions then
 			table.add(sanctions, data.terminatedSanctions)
+		end
+
+		local footer = {
+			text = "Data from " .. parameters.month .. "/" .. parameters.year
+		}
+
+		local filterAllTime = string.upper(tostring(parameters.alltime)) == "TRUE"
+		if filterAllTime then
+			footer.text = footer.text .. " to " .. utils.getMonth() .. "/" .. utils.getYear()
 		end
 
 		local rawReasons = parameters.reason
@@ -115,7 +129,12 @@ return {
 		for sanction = 1, #sanctions do
 			sanction = sanctions[sanction]
 
-			if sanction.Creation >= firstDayRange and sanction.Creation <= lastDayRange then
+			if sanction.Creation >= firstDayRange and
+				(filterAllTime or sanction.Creation <= lastDayRange) and
+				not activity.ignorableState[sanction.State] then
+
+				sanction.__captured = true -- depuration file
+
 				tmpReason, tmpType, tmpNickname = sanction.Reason, sanction.Type,
 					sanction.__playerName
 
@@ -136,9 +155,7 @@ return {
 
 		local tmpNicknames, tmpNicknamesLen, tmpNickname
 
-		parameters.members = parameters.members and string.upper(tostring(parameters.members))
-
-		if parameters.members == "TRUE" then
+		if string.upper(tostring(parameters.members)) == "TRUE" then
 			tmpNicknames, tmpNicknamesLen = parameters.nick, #parameters.nick
 			if tmpNicknamesLen > 1 then
 				tmpNicknamesLen = tmpNicknamesLen + 1
@@ -158,9 +175,18 @@ return {
 			message:reply({
 				embed = {
 					color = 0xBABD2F,
+					description =
+						(tmpNickname == "__total" and table.concat(parameters.nick, '\n') or nil),
 					title = (tmpNickname == "__total" and "Total" or tmpNickname),
-					fields = fields
+					fields = fields,
+					footer = footer
 				}
+			})
+		end
+
+		if string.upper(tostring(parameters.debug)) == "TRUE" then
+			message:reply({
+				file = { "audition_data.json", json.encode(sanctions) }
 			})
 		end
 

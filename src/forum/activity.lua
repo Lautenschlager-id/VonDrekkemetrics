@@ -49,6 +49,11 @@ local sanctionTypes = {
 	}
 }
 
+local ignorableState = {
+	["Canceled"] = true,
+	["Overwritten"] = true
+}
+
 local dataToDivideBy1k = { "Creation", "End", "Start" }
 
 -- Makes the data extracted more useful
@@ -182,5 +187,6 @@ end
 
 return {
 	getActivityData = getActivityData,
-	sanctionTypes = sanctionTypes
+	sanctionTypes = sanctionTypes,
+	ignorableState = ignorableState
 }
