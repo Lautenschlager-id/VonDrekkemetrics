@@ -3,6 +3,7 @@ local discord, protect = _discord.discord, _discord.protect
 
 local channels = require("../utils/discord-objects").channels
 
+local utils = require("../utils/utils")
 local colors = require("../utils/colors")
 
 local commands = {
