@@ -15,7 +15,7 @@ return {
 	description = "Translates a sentence using Google Translate.",
 
 	execute = function(self, message, parameters)
-		local syntax = "Use !" .. self.syntax .. "."
+		local syntax = "Use /" .. self.syntax .. "."
 
 		if not parameters or parameters == '' then
 			return utils.sendError(message, "TRANSLATE", "Missing parameters.", syntax)

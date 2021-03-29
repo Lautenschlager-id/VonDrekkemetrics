@@ -32,8 +32,8 @@ local loadCommands = function()
 end
 
 local getCommandAttempt = function(content)
-	local command, parameters = string.match(content, "^!%s*(%S+)[\n ]+(.*)")
-	command = command or string.match(content, "^!%s*(%S+)")
+	local command, parameters = string.match(content, "^/%s*(%S+)[\n ]+(.*)")
+	command = command or string.match(content, "^/%s*(%S+)")
 	command = string.lower(tostring(command))
 
 	if not (command and commands[command]) then return end

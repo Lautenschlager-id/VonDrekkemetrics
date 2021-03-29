@@ -33,7 +33,7 @@ return {
 		end
 
 		if not parameters or parameters == '?' then
-			return utils.sendError(message, "MODO", "Invalid or missing parameters.", "Use !" ..
+			return utils.sendError(message, "MODO", "Invalid or missing parameters.", "Use /" ..
 				self.bigSyntax)
 		end
 

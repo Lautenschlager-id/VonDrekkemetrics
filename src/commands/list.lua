@@ -30,7 +30,7 @@ return {
 		end
 		listFlags = table.concat(listFlags, "\n")
 
-		local syntax = "Use !" .. self.syntax .. ".\n\nThe available roles are:\n" ..
+		local syntax = "Use /" .. self.syntax .. ".\n\nThe available roles are:\n" ..
 			listFlags
 
 		if not parameters then

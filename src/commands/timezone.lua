@@ -12,7 +12,7 @@ return {
 	execute = function(self, message, parameters)
 		if not parameters or #parameters ~= 2 then
 			return utils.sendError(message, "TIMEZONE", "Invalid or missing parameters.",
-				"Use !" .. self.syntax .. ".")
+				"Use /" .. self.syntax .. ".")
 		end
 		parameters = string.upper(parameters)
 

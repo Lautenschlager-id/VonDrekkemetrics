@@ -15,7 +15,7 @@ return {
 			local cmds, counter = { }, 0
 			for cmd, obj in utils.pairsByIndexes(commands) do
 				counter = counter + 1
-				cmds[counter] = string.format(":small_orange_diamond: **!%s** - %s",
+				cmds[counter] = string.format(":small_orange_diamond: **/%s** - %s",
 					obj.syntax or cmd, obj.description or '')
 			end
 
@@ -31,15 +31,15 @@ return {
 			if command then
 				embed = {
 					color = colors.info,
-					title = ":loudspeaker: Help ~> '!" .. parameters .. "'",
+					title = ":loudspeaker: Help ~> '/" .. parameters .. "'",
 					description = "**Description:** " .. (command.description or "?") ..
-						(command.syntax and ("\n\n**Syntax:** !" .. command.syntax) or '')
+						(command.syntax and ("\n\n**Syntax:** /" .. command.syntax) or '')
 				}
 			else
 				embed = {
 					color = colors.fail,
 					title = ":loudspeaker: Help",
-					description = "The command **!" .. parameters .. "** doesn't exist!"
+					description = "The command **/" .. parameters .. "** doesn't exist!"
 				}
 			end
 		end
