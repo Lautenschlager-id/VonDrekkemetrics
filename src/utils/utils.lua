@@ -1,6 +1,6 @@
 local http = require("coro-http")
 
-local temporaryObject = require("../services/commands").temporaryObject
+local temporaryObject = require("../utils/temporaryObject")
 local colors = require("./colors")
 
 string.split = function(str, separator, raw)

@@ -1,4 +1,4 @@
-local temporaryObject = require("../services/commands").temporaryObject
+local temporaryObject = require("../utils/temporaryObject")
 local utils = require("../utils/utils")
 local roleFlags = require("../utils/guild-roles")
 local colors = require("../utils/colors")

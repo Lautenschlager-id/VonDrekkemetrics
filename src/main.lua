@@ -29,5 +29,8 @@ require("./services/breach-alert")
 require("./utils/discord-objects")
 require("./utils/guild-roles")
 
+-- Commands
+require("./services/commands")
+
 --[[ Init ]]--
 discord:run(secrets.DISCORD_TOKEN)

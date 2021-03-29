@@ -1,6 +1,6 @@
 local http = require("coro-http")
 
-local temporaryObject = require("../services/commands").temporaryObject
+local temporaryObject = require("../utils/temporaryObject")
 local utils = require("../utils/utils")
 local colors = require("../utils/colors")
 

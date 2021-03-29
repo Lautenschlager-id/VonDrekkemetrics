@@ -1,6 +1,8 @@
 local _discord = require("../discord")
 local discord, protect = _discord.discord, _discord.protect
 
+local temporaryObject = require("../utils/temporaryObject")
+
 local channels = require("../utils/discord-objects").channels
 
 local utils = require("../utils/utils")
@@ -13,23 +15,6 @@ local commands = {
 	["list"] = true,
 	["modo"] = true
 }
-
-local temporaryObject = setmetatable({ }, {
-	__newindex = function(list, index, value)
-		if value then
-			if value.id then -- Single message
-				value = { value }
-			end
-
-			-- Only store message IDs to improve memory usage
-			for m = 1, #value do
-				value[m] = value[m].id
-			end
-
-			rawset(list, index, value)
-		end
-	end
-})
 
 local loadCommands = function()
 	local tmpAliases
@@ -104,7 +89,4 @@ discord:on("messageUpdate", protect(function(message)
 	discord:emit("messageCreate", message)
 end))
 
-return {
-	commands = commands,
-	temporaryObject = temporaryObject
-}
+return commands

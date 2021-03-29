@@ -1,5 +1,5 @@
-local _commands = require("../services/commands")
-local commands, temporaryObject = _commands.commands, _commands.temporaryObject
+local commands = require("../services/commands")
+local temporaryObject = require("../utils/temporaryObject")
 local utils = require("../utils/utils")
 local colors = require("../utils/colors")
 
