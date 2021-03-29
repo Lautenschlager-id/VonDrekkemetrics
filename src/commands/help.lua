@@ -8,7 +8,7 @@ return {
 
 	description = "Displays all the commands available.",
 
-	execute = function(message, parameters)
+	execute = function(self, message, parameters)
 		local embed
 
 		if not parameters then

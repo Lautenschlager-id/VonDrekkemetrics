@@ -5,7 +5,8 @@ local commands = {
 	["help"] = true,
 	["timezone"] = true,
 	["translate"] = true,
-	["list"] = true
+	["list"] = true,
+	["modo"] = true
 }
 
 local temporaryObject = setmetatable({ }, {
@@ -59,7 +60,7 @@ local checkCommandAttempt = function(message)
 	local commandObj, parameters = getCommandAttempt(message.content)
 	if not commandObj then return end
 
-	commandObj.execute(message, parameters)
+	commandObj:execute(message, parameters)
 end
 
 discord:once("ready", function()

@@ -6,7 +6,7 @@ local channels = {
 	["int-breach"] = "814497990948814918", -- #data-breaches
 
 	-- Br Staff
-	["br-flood"] = "818016844522586123",--"450616585065857024", -- #bot-uso
+	["br-flood"] = "826082697185198140", -- #bot-utils
 
 	-- Debug
 	["debug"] = "818016844522586123", -- #von-drekkemetrics

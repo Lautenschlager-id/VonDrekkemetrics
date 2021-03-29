@@ -9,10 +9,10 @@ return {
 
 	description = "Displays the timezone of a country.",
 
-	execute = function(message, parameters)
+	execute = function(self, message, parameters)
 		if not parameters or #parameters ~= 2 then
 			return utils.sendError(message, "TIMEZONE", "Invalid or missing parameters.",
-				"Use `!timezone country_code`.")
+				"Use !" .. self.syntax .. ".")
 		end
 		parameters = string.upper(parameters)
 

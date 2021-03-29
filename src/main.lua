@@ -11,10 +11,10 @@ local forum, fromage = _forum.forum, _forum.fromage
 discord:once("ready", function()
 	p("[DISCORD] OK")
 
-	--forum.connect(secrets.FORUM_LOGIN, secrets.FORUM_PASSWORD)
-	--if forum.isConnected then
-	--	p("[FORUM] OK")
-	--end
+	repeat
+		forum.connect(secrets.FORUM_LOGIN, secrets.FORUM_PASSWORD)
+	until forum.isConnected()
+	p("[FORUM] OK")
 end)
 
 --[[ Services ]]--

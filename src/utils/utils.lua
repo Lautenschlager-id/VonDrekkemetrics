@@ -1,5 +1,35 @@
+local http = require("coro-http")
+
 local temporaryObject = require("../services/commands").temporaryObject
 local colors = require("./colors")
+
+string.split = function(str, separator, raw)
+	local out, counter = { }, 0
+
+	local strPos = 1
+	local i, j
+	while true do
+		i, j = string.find(str, separator, strPos, raw)
+		if not i then break end
+		counter = counter + 1
+		out[counter] = string.sub(str, strPos, i - 1)
+		out[counter] = tonumber(out[counter]) or out[counter]
+
+		strPos = j + 1
+	end
+	counter = counter + 1
+	out[counter] = string.sub(str, strPos)
+	out[counter] = tonumber(out[counter]) or out[counter]
+
+	return out, counter
+end
+
+table.add = function(src, add)
+	local len = #src
+	for i = 1, #add do
+		src[len + i] = add[i]
+	end
+end
 
 local pairsByIndexes = function(list, f)
 	local out, counter = { }, 0
@@ -62,9 +92,101 @@ local splitByLine = function(content, max)
 	return data
 end
 
+local getParametersTableSplitByEqualsSign = function(parameters)
+	local list = { }
+
+	-- Bad code pls
+	for _, regex in next, { "(%S+)%s*=%s*([^%[]%S*)", "(%S+)%s*=%s*(%b[])" } do
+		for arg, value in string.gmatch(parameters, regex) do
+			if string.sub(value, 1, 1) == '[' then
+				value = string.split(string.sub(value, 2, -2), ',', true)
+				for v = 1, #value do
+					value[v] = string.trim(value[v])
+				end
+			else
+				value = tonumber(value) or value
+			end
+			list[string.lower(arg)] = value
+		end
+	end
+
+	return list
+end
+
+local isPlayer = function(playerName)
+	local _, body = http.request("GET", "https://atelier801.com/profile?pr=" ..
+		encodeUrl(playerName), { { "Accept-Language", "en-US,en;q=0.9" } })
+
+	return not string.find(body, "The request contains one or more invalid parameters")
+end
+
+local validatePlayersList = function(nicknames, defaultTag)
+	local tmpNick
+	for nick = 1, #nicknames do
+		tmpNick = nicknames[nick]
+
+		if string.sub(tmpNick, -5, -5) ~= '#' then
+			tmpNick = tmpNick .. defaultTag
+		end
+
+		if not isPlayer(tmpNick) then
+			return tmpNick
+		end
+
+		nicknames[nick] = tmpNick
+	end
+end
+
+local getMonth = function(value)
+	if value then
+		value = tonumber(value)
+		value = (value >= 1 and value <= 12 and value or nil)
+	end
+	return value or os.date("%m")*1
+end
+
+local getYear = function(value)
+	local currentYear = os.date("%Y")*1
+	if value then
+		value = tonumber(value)
+		value = (value >= currentYear-2 and value or nil)
+	end
+	return value or currentYear
+end
+
+local getMonthRange = function(month, year)
+	local firstDayRange = os.time({
+		day = 1,
+		month = month,
+		year = year
+	})
+
+	local nextMonth = month % 12 + 1
+	if nextMonth < month then
+		year = year + 1
+	end
+
+	local lastDayRange = os.time({
+		day = 1,
+		month = nextMonth,
+		year = year,
+		hour = 0,
+		min = 0,
+		sec = -1
+	})
+
+	return firstDayRange, lastDayRange
+end
+
 return {
 	pairsByIndexes = pairsByIndexes,
 	sendError = sendError,
 	splitByLine = splitByLine,
-	encodeUrl = encodeUrl
+	encodeUrl = encodeUrl,
+	getParametersTableSplitByEqualsSign = getParametersTableSplitByEqualsSign,
+	isPlayer = isPlayer,
+	validatePlayersList = validatePlayersList,
+	getMonth = getMonth,
+	getYear = getYear,
+	getMonthRange = getMonthRange
 }

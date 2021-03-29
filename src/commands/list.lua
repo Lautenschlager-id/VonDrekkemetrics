@@ -17,7 +17,7 @@ return {
 
 	description = "Lists the users with a specific role.",
 
-	execute = function(message, parameters)
+	execute = function(self, message, parameters)
 		local roleFlags = roleFlags[message.guild.id]
 		if not roleFlags then
 			return utils.sendError(message, "LIST", "Forbidden command.",
@@ -30,7 +30,7 @@ return {
 		end
 		listFlags = table.concat(listFlags, "\n")
 
-		local syntax = "Use `!list [-]role_name/index[, ...]`.\n\nThe available roles are:\n" ..
+		local syntax = "Use !" .. self.syntax .. ".\n\nThe available roles are:\n" ..
 			listFlags
 
 		if not parameters then
