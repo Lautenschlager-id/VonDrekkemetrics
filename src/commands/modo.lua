@@ -21,11 +21,13 @@ return {
 		      [ `reason=[ FILTER (PATTERN), FILTER2, FILTER3#BANTYPE ]` (DEFAULT=NULL) ]\
 		      [ `month=ACTIVITY FOR THE SPECIFIC MONTH` (DEFAULT=CURRENT MONTH) ]\
 		      [ `year=ACTIVITY FOR THE SPECIFIC YEAR` (DEFAULT=CURRENT YEAR) ]\
-		      [ `members=IF IT SHOULD DISPLAY DATA PER MEMBERS (TRUE/FALSE)` (DEFAULT=FALSE) ]\
-		      [ `alltime=IF THE MONTH/YEAR RANGE SHOULD NOT BE LIMITED TO 1 MONTH (TRUE/FALSE)` (DEFAULT=FALSE) ]\
-		      [ `debug=IF THE BOT SHOULD SEND AN AUDITION FILE (TRUE/FALSE)` (DEFAULT=FALSE) ]\
+		      [ `members=WHETHER IT SHOULD DISPLAY DATA PER MEMBERS (TRUE/FALSE)` (DEFAULT=FALSE) ]\
+		      [ `alltime=WHETHER THE MONTH/YEAR RANGE SHOULD NOT BE LIMITED TO 1 MONTH \z
+				(TRUE/FALSE)` (DEFAULT=FALSE) ]\
+		      [ `debug=WHETHER THE BOT SHOULD SEND AN AUDITION FILE (TRUE/FALSE)` (DEFAULT=FALSE) ]\
 		\
-		[CLICK HERE TO GENERATE THE COMMAND ONLINE](https://lautenschlager-id.github.io/drekkemetrics.github.io/)",
+		[CLICK HERE TO GENERATE THE COMMAND ONLINE](https://lautenschlager-id.github.io/\z
+			drekkemetrics.github.io/)",
 
 	description = "Gets the activity of the given moderators.",
 
@@ -140,7 +142,8 @@ return {
 
 				for reason = 1, rawReasonsLen do
 					tmpPattern = rawReasons[reason]
-					if (not tmpPattern.pattern or string.find(tmpReason, tmpPattern.pattern)) and
+					if (not tmpPattern.pattern
+						or (tmpReason and string.find(tmpReason, tmpPattern.pattern))) and
 						(not tmpPattern.type or tmpPattern.type == tmpType) then
 
 
