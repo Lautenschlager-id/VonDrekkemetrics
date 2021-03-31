@@ -31,6 +31,8 @@ return {
 
 	description = "Gets the activity of the given moderators.",
 
+	usesForum = true,
+
 	execute = function(self, message, parameters)
 		if not forum.isConnected() or forum._BUSY then
 			return utils.sendError(message, "MODO", "Service unavailable.", "Try again in a few \z

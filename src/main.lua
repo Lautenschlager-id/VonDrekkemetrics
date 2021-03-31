@@ -11,10 +11,7 @@ local forum, fromage = _forum.forum, _forum.fromage
 discord:once("ready", protect(function()
 	p("[DISCORD] OK")
 
-	repeat
-		forum.connect(secrets.FORUM_LOGIN, secrets.FORUM_PASSWORD)
-	until forum.isConnected()
-	p("[FORUM] OK")
+	forum.heartbeatOrReconnect()
 end))
 
 --[[ Services ]]--

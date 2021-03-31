@@ -1,6 +1,8 @@
 local _discord = require("../discord")
 local discord, protect = _discord.discord, _discord.protect
 
+local forum = require("../forum").forum
+
 local temporaryObject = require("../utils/temporaryObject")
 
 local channels = require("../utils/discord-objects").channels
@@ -56,6 +58,10 @@ local checkCommandAttempt = function(message)
 			return utils.sendError(message, "403", "Access denied.", "You cannot use this \z
 				command in this channel.", colors.error)
 		end
+	end
+
+	if commandObj.usesForum then
+		forum.heartbeatOrReconnect()
 	end
 
 	commandObj:execute(message, parameters)
