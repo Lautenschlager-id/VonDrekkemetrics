@@ -15,7 +15,8 @@ local commands = {
 	["timezone"] = true,
 	["translate"] = true,
 	["list"] = true,
-	["modo"] = true
+	["modo"] = true,
+	["senti"] = true
 }
 
 local loadCommands = function()
@@ -61,6 +62,11 @@ local checkCommandAttempt = function(message)
 	end
 
 	if commandObj.usesForum then
+		if --[[not forum.isConnected() or]] forum._BUSY then
+			return utils.sendError(message, "503", "Service unavailable.", "Try again in a few \z
+				minutes.")
+		end
+
 		forum.heartbeatOrReconnect()
 	end
 

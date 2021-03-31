@@ -13,10 +13,10 @@ return {
 		[discordChannels["br-utils"].id] = true
 	},
 
-	syntax = "modo `[settings]` [Generator](https://lautenschlager-id.github.io/drekkemetrics.\z
-		github.io/modo.html)",
+	syntax = "senti `[settings]` [Generator](https://lautenschlager-id.github.io/drekkemetrics.\z
+		github.io/senti.html)",
 
-	bigSyntax = "modo \
+	bigSyntax = "senti \
 		      [ `nick=[ NICKNAME, TO, CHECK, ACTIVITY ]` ]*\
 		      [ `reason=[ FILTER (PATTERN), FILTER2, FILTER3#BANTYPE ]` (DEFAULT=NULL) ]\
 		      [ `month=ACTIVITY FOR THE SPECIFIC MONTH` (DEFAULT=CURRENT MONTH) ]\
@@ -24,36 +24,39 @@ return {
 		      [ `members=WHETHER IT SHOULD DISPLAY DATA PER MEMBERS (TRUE/FALSE)` (DEFAULT=FALSE) ]\
 		      [ `alltime=WHETHER THE MONTH/YEAR RANGE SHOULD NOT BE LIMITED TO 1 MONTH \z
 				(TRUE/FALSE)` (DEFAULT=FALSE) ]\
+		      [ `warn=WHETHER IT SHOULD DISPLAY WARNINGS DATA (TRUE/FALSE)` (DEFAULT=TRUE) ]\
+		      [ `report=WHETHER IT SHOULD DISPLAY HANDLED REPORTS DATA (TRUE/FALSE)` (DEFAULT=TRUE\z
+				) ]\
 		      [ `debug=WHETHER THE BOT SHOULD SEND AN AUDITION FILE (TRUE/FALSE)` (DEFAULT=FALSE) ]\
 		\
 		[CLICK HERE TO GENERATE THE COMMAND ONLINE](https://lautenschlager-id.github.io/\z
-			drekkemetrics.github.io/modo.html)",
+			drekkemetrics.github.io/senti.html)",
 
-	description = "Gets the activity of the given moderators.",
+	description = "Gets the activity of the given sentinels.",
 
 	usesForum = true,
 
 	execute = function(self, message, parameters)
 		if not parameters or parameters == '?' then
-			return utils.sendError(message, "MODO", "Invalid or missing parameters.", "Use /" ..
+			return utils.sendError(message, "SENTI", "Invalid or missing parameters.", "Use /" ..
 				self.bigSyntax)
 		end
 
 		parameters = utils.getParametersTableSplitByEqualsSign(parameters)
 
 		if type(parameters.nick) ~= "table" or not parameters.nick[1] then
-			return utils.sendError(message, "MODO", "Invalid parameter 'nick'.",
+			return utils.sendError(message, "SENTI", "Invalid parameter 'nick'.",
 				"The parameter 'nick' must be a table with at least one value. E.g.: [ a, b ]")
 		end
 
 		forum._BUSY = true
 		message:addReaction(reactions.idle)
 
-		local invalidName = utils.validatePlayersList(parameters.nick, "#0010")
+		local invalidName = utils.validatePlayersList(parameters.nick, "#0015")
 		if invalidName then
 			message:clearReactions()
 			message:addReaction(reactions.dnd)
-			return utils.sendError(message, "MODO", "Invalid value for 'nick'.", "The player '" ..
+			return utils.sendError(message, "SENTI", "Invalid value for 'nick'.", "The player '" ..
 					invalidName .. "' could not be found.")
 		end
 
@@ -64,7 +67,7 @@ return {
 
 		local data, tmpActivity = { }
 		for member = 1, #parameters.nick do
-			tmpActivity = activity.getActivityData(parameters.nick[member], "moderator",
+			tmpActivity = activity.getActivityData(parameters.nick[member], "sentinel",
 				firstDayRange)
 
 			for k, v in next, tmpActivity do -- Adds to all-members' data
@@ -82,6 +85,16 @@ return {
 			table.add(sanctions, data.terminatedSanctions)
 		end
 
+		local filterWarnings = string.upper(tostring(parameters.warn)) ~= "FALSE"
+		if data.warnings then
+			table.add(sanctions, data.warnings)
+		end
+
+		local filterReports = string.upper(tostring(parameters.warn)) ~= "FALSE"
+		if data.handledReports then
+			table.add(sanctions, data.handledReports)
+		end
+
 		local footer = {
 			text = "Data from " .. parameters.month .. "/" .. parameters.year
 		}
@@ -95,10 +108,18 @@ return {
 		local rawReasonsLen = rawReasons and #rawReasons
 
 		if not rawReasonsLen then
+			local sanctionTypes = table.copy(activity.sanctionTypes.sentinel)
+			if filterWarnings then
+				sanctionTypes["warn"] = true
+			end
+			if filterReports then
+				sanctionTypes["handledreport"] = true
+			end
+
 			rawReasons =  { }
 			rawReasonsLen = 0
 
-			for reasonType in next, activity.sanctionTypes.moderator do
+			for reasonType in next, sanctionTypes do
 				rawReasonsLen = rawReasonsLen + 1
 				rawReasons[rawReasonsLen] = "#" .. reasonType
 			end
@@ -123,24 +144,30 @@ return {
 			}
 		end
 
-		local tmpReason, tmpType, tmpNickname, tmpReasonObj
+		local tmpReason, tmpType, tmpNickname, tmpReasonObj, tmpCheckType
 		for sanction = 1, #sanctions do
 			sanction = sanctions[sanction]
 
 			if sanction.__sourceDate >= firstDayRange and
 				(filterAllTime or sanction.__sourceDate <= lastDayRange) and
-				not activity.ignorableState[sanction.State] then
+				(not (sanction.__checkState and activity.ignorableState[sanction.State])) then
 
 				sanction.__captured = true -- depuration file
 
-				tmpReason, tmpType, tmpNickname = sanction.__messageSource, sanction.__type,
-					sanction.__playerName
+				tmpReason, tmpType, tmpNickname, tmpMustCheckType, tmpCheckType =
+					sanction.__messageSource, sanction.__type, sanction.__playerName,
+					sanction.__checkType
 
 				for reason = 1, rawReasonsLen do
 					tmpPattern = rawReasons[reason]
-					if (not tmpPattern.type or tmpPattern.type == tmpType) and
-						(not tmpPattern.pattern
-							or (tmpReason and string.find(tmpReason, tmpPattern.pattern))) then
+
+					tmpCheckType = tmpPattern.type == tmpType
+					if not tmpMustCheckType then
+						tmpCheckType = not tmpPattern.type or tmpCheckType
+					end
+
+					if tmpCheckType and (not tmpPattern.pattern or (tmpReason and
+						string.find(tmpReason, tmpPattern.pattern))) then
 						tmpReasonObj = reasons[reason]
 						tmpReasonObj.__total = tmpReasonObj.__total + 1
 
@@ -176,7 +203,7 @@ return {
 			tmpPayload = {
 				content = (member > 1 and separator or nil),
 				embed = {
-					color = 0xBABD2F,
+					color = 0x2ECF73,
 					description = (tmpNickname == "__total" and tmpNicknameList or nil),
 					title = (tmpNickname == "__total" and "Total" or tmpNickname),
 					fields = nil,

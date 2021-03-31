@@ -29,7 +29,7 @@ local accordionsByRole = {
 		"activeSanctions",
 		"terminatedSanctions",
 		"warnings",
-		"moderatedMessages",
+		--"moderatedMessages",
 		"handledReports"
 	}
 }
@@ -54,30 +54,48 @@ local ignorableState = {
 	["Overwritten"] = true
 }
 
-local dataToDivideBy1k = { "Creation", "End", "Start" }
+local dataToDivideBy1k = {
+	"Creation", "End", "Start", -- Sanction
+	"Date", "ConsultationDate", -- Warn / Handled Report
+}
 
 -- Makes the data extracted more useful
-local normalizeBodyData = function(registry)
-	registry.isIP = string.sub(registry.Target, 1, 1) == '#'
-
-	if not registry.isIP and string.sub(registry.Target, -5, -5) ~= '#' then
-		registry.Target = registry.Target .. "#0000"
-	end
-
-	registry.DurationInt = tonumber(string.match(tostring(registry.Duration), "%d+")) or 0
-	registry.isPermanent = registry.Duration == "Perm"
-
+local normalizeBodyData = function(registry, accordionName)
 	for _, field in next, dataToDivideBy1k do
 		registry[field] = registry[field] and registry[field]/1000
 	end
 
-	registry.Reason = registry.Reason and string.lower(registry.Reason)
+	if accordionName == "activeSanctions" or accordionName == "terminatedSanctions" then
+		registry.isIP = string.sub(registry.Target, 1, 1) == '#'
+
+		if not registry.isIP and string.sub(registry.Target, -5, -5) ~= '#' then
+			registry.Target = registry.Target .. "#0000"
+		end
+
+		registry.DurationInt = tonumber(string.match(tostring(registry.Duration), "%d+")) or 0
+		registry.isPermanent = registry.Duration == "Perm"
+
+		registry.__type = registry.Type
+		registry.__sourceDate = registry.Creation
+		registry.__messageSource = registry.Reason and string.lower(registry.Reason)
+		registry.__checkState = true
+	elseif accordionName == "warnings" then
+		registry.__type = "warn"
+		registry.__sourceDate = registry.Date
+		registry.__messageSource = registry.Text and string.lower(registry.Text)
+		registry.__checkType = true
+	elseif accordionName == "handledReports" then
+		registry.__type = "handledreport"
+		registry.__sourceDate = registry.Date
+		registry.__messageSource = registry.Message and string.lower(registry.Message)
+		registry.__checkType = true
+	end
 end
 
 -- Parses table headers
 local parseTableHeader = function(thead)
 	local headItems, counterHeadItems = { }, 0
-	for item in string.gmatch(thead, "<th.->(.-)</th>") do
+	for _, item in string.gmatch(thead, "<t([hd]).->(.-)</t%1>") do
 		counterHeadItems = counterHeadItems + 1
 		headItems[counterHeadItems] = item:gsub("%s+(%a)", string.upper)
 	end
@@ -86,7 +104,8 @@ local parseTableHeader = function(thead)
 end
 
 -- Parses table registries, checks if the target date has been found in the page or not.
-local parseTableBody = function(tbody, targetDate, role, playerName, headItems, counterHeadItems)
+local parseTableBody = function(tbody, targetDate, role, playerName, accordionName, headItems,
+	counterHeadItems)
 	local bodyItems, counterBodyItems = { }, 0
 	local tmpItem, tmpCounterCurrentItem = nil, 0
 
@@ -109,15 +128,15 @@ local parseTableBody = function(tbody, targetDate, role, playerName, headItems, 
 		tmpItem[headItems[tmpCounterCurrentItem]] = tonumber(item) or (item ~= '' and item or nil)
 
 		if tmpCounterCurrentItem == counterHeadItems then
-			if sanctionTypes[tmpItem.Type] then
-				normalizeBodyData(tmpItem)
+			if not tmpItem.__type or sanctionTypes[tmpItem.__type] then
+				normalizeBodyData(tmpItem, accordionName)
 				tmpItem.__playerName = playerName
 			else  -- will overwrite
 				bodyItems[counterBodyItems] = nil
 				counterBodyItems = counterBodyItems - 1
 			end
 
-			if not foundOccurenceOfTargetDate and tmpItem.Creation >= targetDate then
+			if not foundOccurenceOfTargetDate and tmpItem.__sourceDate >= targetDate then
 				foundOccurenceOfTargetDate = true
 			end
 
@@ -130,14 +149,14 @@ local parseTableBody = function(tbody, targetDate, role, playerName, headItems, 
 end
 
 -- Gets the data from a specific accordion
-local getAccordion = function(html, accordionPattern, role, targetDate, playerName)
+local getAccordion = function(html, accordionPattern, role, targetDate, playerName, accordionName)
 	local thead, tbody = string.match(html, accordionPattern)
 	if not thead then
 		return { }, false
 	end
 
 	local bodyItems, counterBodyItems, foundOccurenceOfTargetDate =
-		parseTableBody(tbody, targetDate, role, playerName, parseTableHeader(thead))
+		parseTableBody(tbody, targetDate, role, playerName, accordionName, parseTableHeader(thead))
 
 	return bodyItems, foundOccurenceOfTargetDate
 end
@@ -156,7 +175,7 @@ do
 		for _, accordion in next, accordionsByRole[role] do
 			bodyItems, tmpFoundOccurenceOfTargetDate =
 				getAccordion(html, string.format(accordionData, accordionTitles[accordion]),
-					role, targetDate, _rawPlayerName)
+					role, targetDate, _rawPlayerName, accordion)
 
 			if not _data[accordion] then
 				_data[accordion] = bodyItems

@@ -33,6 +33,24 @@ table.add = function(src, add)
 	end
 end
 
+table.arrayRange = function(arr, i, j)
+	i = i or 1
+	j = j or #arr
+
+	local newArray = { }
+	if i > j then
+		return newArray
+	end
+
+	local counter = 0
+	for v = i, j do
+		counter = counter + 1
+		newArray[counter] = arr[v]
+	end
+
+	return newArray
+end
+
 local pairsByIndexes = function(list, f)
 	local out, counter = { }, 0
 	for index in next, list do
