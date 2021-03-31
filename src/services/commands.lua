@@ -67,7 +67,8 @@ local checkCommandAttempt = function(message)
 				minutes.")
 		end
 
-		forum.heartbeatOrReconnect()
+		local isConnected = forum.heartbeatOrReconnect()
+		p("[FORUM DEBUG] isConnected", isConnected)
 	end
 
 	commandObj:execute(message, parameters)
