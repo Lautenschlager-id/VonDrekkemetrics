@@ -1,4 +1,7 @@
 ------------------------------------------- Optimization -------------------------------------------
+
+local forum = require("../forum").forum
+
 local str_format = string.format
 local str_gmatch = string.gmatch
 local str_gsub = string.gsub
@@ -11,9 +14,6 @@ local tbl_add = table.add
 
 local tonumber = tonumber
 local tostring = tostring
-----------------------------------------------------------------------------------------------------
-
-local forum = require("../forum").forum
 
 ----------------------------------------------------------------------------------------------------
 

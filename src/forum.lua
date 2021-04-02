@@ -1,7 +1,12 @@
 local secrets = require("./secrets")
 
 local fromage = require("fromage")
+
+----------------------------------------------------------------------------------------------------
+
 local forum = fromage()
+
+----------------------------------------------------------------------------------------------------
 
 forum.heartbeatOrReconnect = function()
 	p("[FORUM] CHECKING CONNECTION")

@@ -1,15 +1,31 @@
 local temporaryObject = require("../utils/temporaryObject")
 local utils = require("../utils/utils")
+
 local roleFlags = require("../utils/guild-roles")
-local colors = require("../utils/colors")
-local reactions = require("../utils/reactions")
+local colors = require("../utils/enums/colors")
+local reactions = require("../utils/enums/reactions")
+
+------------------------------------------- Optimization -------------------------------------------
+
+local str_gmatch = string.gmatch
+local str_lower = string.lower
+local str_sub = string.sub
+local str_trim = string.trim
+local str_upper = string.upper
+
+local tbl_concat = table.concat
+local tbl_sort = table.sort
+
+local tonumber = tonumber
+
+----------------------------------------------------------------------------------------------------
 
 local listRoles = function(list)
 	local rolesList = { }
 	for role = 1, #list do
-		rolesList[role] = string.upper(list[role].name)
+		rolesList[role] = str_upper(list[role].name)
 	end
-	return table.concat(rolesList, ", ")
+	return tbl_concat(rolesList, ", ")
 end
 
 return {
@@ -28,7 +44,7 @@ return {
 		for r = 1, #roleFlags do
 			listFlags[r] = "\t• [" .. r .. "] " .. roleFlags[r].name
 		end
-		listFlags = table.concat(listFlags, "\n")
+		listFlags = tbl_concat(listFlags, "\n")
 
 		local syntax = "Use /" .. self.syntax .. ".\n\nThe available roles are:\n" ..
 			listFlags
@@ -37,19 +53,19 @@ return {
 			return utils.sendError(message, "LIST", "Invalid or missing parameters.", syntax)
 		end
 
-		parameters = string.lower(parameters)
+		parameters = str_lower(parameters)
 
 		local mustHaveRoles, mustNotHaveRoles = { }, { }
 		local counterMustHaveRoles, counterMustNotHaveRoles = 0, 0
 		local isNotHave, isRoleIndex, role
 
-		for rawRole in string.gmatch(parameters, "[^,]+") do
-			rawRole = string.trim(rawRole)
+		for rawRole in str_gmatch(parameters, "[^,]+") do
+			rawRole = str_trim(rawRole)
 
-			isNotHave = string.sub(rawRole, 1, 1) == '-'
+			isNotHave = str_sub(rawRole, 1, 1) == '-'
 			if isNotHave then
 				counterMustNotHaveRoles = counterMustNotHaveRoles + 1
-				rawRole = string.sub(rawRole, 2)
+				rawRole = str_sub(rawRole, 2)
 			else
 				counterMustHaveRoles = counterMustHaveRoles + 1
 			end
@@ -102,7 +118,7 @@ return {
 			return
 		end
 
-		table.sort(membersList, function(m1, m2)
+		tbl_sort(membersList, function(m1, m2)
 			return m1.name < m2.name
 		end)
 
@@ -113,7 +129,7 @@ return {
 				.. "> " .. member.name
 		end
 
-		local lines, messages = utils.splitByLine(table.concat(formattedMembers, "\n")), { }
+		local lines, messages = utils.splitByLine(tbl_concat(formattedMembers, "\n")), { }
 		for line = 1, #lines do
 			messages[line] = message:reply({
 				embed = {

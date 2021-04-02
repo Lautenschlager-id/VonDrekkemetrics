@@ -1,14 +1,28 @@
 local _discord = require("../discord")
+
+local temporaryObject = require("../utils/temporaryObject")
+
+local utils = require("../utils/utils")
+local colors = require("../utils/enums/colors")
+
+------------------------------------------- Optimization -------------------------------------------
+
+local channels = require("../utils/discord-objects").channels
+
 local discord, protect = _discord.discord, _discord.protect
 
 local forum = require("../forum").forum
 
-local temporaryObject = require("../utils/temporaryObject")
+local str_match = string.match
+local str_lower = string.lower
+local str_trim = string.trim
 
-local channels = require("../utils/discord-objects").channels
+local next = next
 
-local utils = require("../utils/utils")
-local colors = require("../utils/colors")
+local tostring = tostring
+local type = type
+
+----------------------------------------------------------------------------------------------------
 
 local commands = {
 	["help"] = true,
@@ -20,6 +34,8 @@ local commands = {
 }
 
 local loadCommands = function()
+	p("[LOAD] Command Handler")
+
 	local tmpAliases
 	for command in next, commands do
 		p("[LOAD] Command " .. command)
@@ -35,50 +51,61 @@ local loadCommands = function()
 end
 
 local getCommandAttempt = function(content)
-	local command, parameters = string.match(content, "^/%s*(%S+)[\n ]+(.*)")
-	command = command or string.match(content, "^/%s*(%S+)")
-	command = string.lower(tostring(command))
+	local command, parameters = str_match(content, "^/%s*(%S+)[\n ]+(.*)")
+	command = command or str_match(content, "^/%s*(%S+)")
+	command = str_lower(tostring(command))
 
 	if not (command and commands[command]) then return end
 	if type(commands[command]) == "string" then -- alias
 		command = commands[command]
 	end
 
-	parameters = (parameters and parameters ~= '') and string.trim(parameters) or nil
+	parameters = (parameters and parameters ~= '') and str_trim(parameters) or nil
 
 	return commands[command], parameters, command
+end
+
+local messageHasPermissionCommandTrigger = function(commandObj, message)
+	if commandObj.channel then
+		if not commandObj.channel[message.channel.id]
+			and message.channel.id ~= channels["debug"].id then
+			utils.sendError(message, "403", "Access denied.", "You cannot use this \z
+				command in this channel.", colors.error)
+			return false
+		end
+	end
+	return true
+end
+
+local isForumAvailableCommandTrigger = function(commandObj, message)
+	if commandObj.usesForum then
+		if --[[not forum.isConnected() or]] forum._BUSY then
+			utils.sendError(message, "503", "Service unavailable.", "Try again in a few \z
+				minutes.")
+			return false
+		end
+
+		local isConnected = forum.heartbeatOrReconnect()
+		p("[FORUM DEBUG] isConnected", isConnected)
+	end
+	return true
 end
 
 local checkCommandAttempt = function(message)
 	local commandObj, parameters = getCommandAttempt(message.content)
 	if not commandObj then return end
 
-	if commandObj.channel then
-		if not commandObj.channel[message.channel.id]
-			and message.channel.id ~= channels["debug"].id then
-			return utils.sendError(message, "403", "Access denied.", "You cannot use this \z
-				command in this channel.", colors.error)
-		end
+	if
+		messageHasPermissionCommandTrigger(commandObj, message)
+		and isForumAvailableCommandTrigger(commandObj, message)
+	then
+		commandObj:execute(message, parameters)
 	end
-
-	if commandObj.usesForum then
-		if --[[not forum.isConnected() or]] forum._BUSY then
-			return utils.sendError(message, "503", "Service unavailable.", "Try again in a few \z
-				minutes.")
-		end
-
-		local isConnected = forum.heartbeatOrReconnect()
-		p("[FORUM DEBUG] isConnected", isConnected)
-	end
-
-	commandObj:execute(message, parameters)
 end
 
-discord:once("ready", protect(function()
-	p("[LOAD] Command Handler")
+----------------------------------------------------------------------------------------------------
 
-	loadCommands()
-end))
+discord:once("ready", protect(loadCommands))
 
 discord:on("messageCreate", protect(function(message)
 	-- Ignore its own messages

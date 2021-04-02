@@ -1,8 +1,21 @@
-local http = require("coro-http")
-
 local temporaryObject = require("../utils/temporaryObject")
 local utils = require("../utils/utils")
-local colors = require("../utils/colors")
+local colors = require("../utils/enums/colors")
+
+------------------------------------------- Optimization -------------------------------------------
+
+local http_request = require("coro-http").request
+
+local load = load
+
+local str_upper = string.upper
+
+local os_date = os.date
+local os_time = os.time
+
+local tbl_concat = table.concat
+
+----------------------------------------------------------------------------------------------------
 
 return {
 	syntax = "timezone [`country_code`]*",
@@ -14,9 +27,9 @@ return {
 			return utils.sendError(message, "TIMEZONE", "Invalid or missing parameters.",
 				"Use /" .. self.syntax .. ".")
 		end
-		parameters = string.upper(parameters)
+		parameters = str_upper(parameters)
 
-		local head, body = http.request("GET", "https://pastebin.com/raw/di8TMeeG")
+		local head, body = http_request("GET", "https://pastebin.com/raw/di8TMeeG")
 		if not body then
 			return utils.sendError(message, "TIMEZONE", "Internal error.", "Try again later.")
 		end
@@ -28,12 +41,12 @@ return {
 		end
 		parameters = body[parameters]
 
-		local currentTime = os.time()
+		local currentTime = os_time()
 		local timezones, counter = { }, 0
 		for timezone = 1, #parameters do
 			counter = counter + 1
 			timezones[counter] = timezone .. " - **" .. parameters[timezone].zone .. "** - " ..
-				os.date("%H:%M:%S `%d/%m/%Y`",
+				os_date("%H:%M:%S `%d/%m/%Y`",
 				currentTime + ((parameters[timezone].utc or 0) * 3600))
 		end
 
@@ -41,7 +54,7 @@ return {
 			embed = {
 				color = colors.info,
 				title = "🕐 " .. parameters[1].country,
-				description = table.concat(timezones, "\n")
+				description = tbl_concat(timezones, "\n")
 			}
 		})
 	end

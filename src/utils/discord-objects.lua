@@ -1,5 +1,12 @@
 local _discord = require("../discord")
+
+------------------------------------------- Optimization -------------------------------------------
+
 local discord, protect = _discord.discord, _discord.protect
+
+local next = next
+
+----------------------------------------------------------------------------------------------------
 
 local channels = {
 	-- Int Staff
@@ -18,6 +25,7 @@ local guilds = {
 }
 
 local getChannelAndGuildObjects = function()
+	p("[LOAD] Get Channel and Guild Objects")
 	for name, id in next, channels do
 		channels[name] = discord:getChannel(id)
 		name = channels[name]
@@ -29,10 +37,7 @@ local getChannelAndGuildObjects = function()
 	end
 end
 
-discord:once("ready", protect(function()
-	p("[LOAD] Get Channel and Guild Objects")
-	getChannelAndGuildObjects()
-end))
+discord:once("ready", protect(getChannelAndGuildObjects))
 
 return {
 	channels = channels,

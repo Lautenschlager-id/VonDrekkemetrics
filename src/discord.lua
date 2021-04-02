@@ -1,15 +1,28 @@
 local discordia = require("discordia")
+
+------------------------------------------- Optimization -------------------------------------------
+
+local discordia_Date = discordia.Date
+
+local dbg_traceback = debug.traceback
+
+----------------------------------------------------------------------------------------------------
+
+discordia.extensions()
+
 local discord = discordia.Client({
 	cacheAllMembers = true
 })
-discordia.extensions()
 
 local disclock = discordia.Clock()
+
+----------------------------------------------------------------------------------------------------
 
 local protect = function(f)
 	return function(...)
 		local success, err = pcall(f, ...)
 		if not success then
+			p("[ERROR]")
 			discord:getChannel("818016844522586123"):send({
 				mention = discord.owner,
 				embed = {
@@ -19,11 +32,11 @@ local protect = function(f)
 					fields = {
 						[1] = {
 							name = "Traceback",
-							value = "```\n" .. debug.traceback() .. "```",
+							value = "```\n" .. dbg_traceback() .. "```",
 							inline = false
 						}
 					},
-					timestamp = discordia.Date():toISO()
+					timestamp = discordia_Date():toISO()
 				}
 			})
 			return false

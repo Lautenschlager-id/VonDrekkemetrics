@@ -1,13 +1,19 @@
-local secrets = require("./secrets")
-local utils = require("./utils/utils")
-
---[[ Connect ]]--
 local _discord = require("./discord")
 local _forum = require("./forum")
 
+local secrets = require("./secrets")
+local utils = require("./utils/utils")
+
+------------------------------------------- Optimization -------------------------------------------
+
 local discord, discordia, protect = _discord.discord, _discord.discordia, _discord.protect
+
 local forum, fromage = _forum.forum, _forum.fromage
 
+----------------------------------------------------------------------------------------------------
+
+
+--[[ Connect ]]--
 discord:once("ready", protect(function()
 	p("[DISCORD] OK")
 

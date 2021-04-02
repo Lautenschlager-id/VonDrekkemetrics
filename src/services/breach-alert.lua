@@ -1,11 +1,28 @@
-local http = require("coro-http")
-local json = require("json")
-
 local _discord = require("../discord")
+
+local colors = require("../utils/enums/colors")
+
+------------------------------------------- Optimization -------------------------------------------
+
 local discord, disclock, protect = _discord.discord, _discord.disclock, _discord.protect
 
-local colors = require("../utils/colors")
 local channels = require("../utils/discord-objects").channels
+
+local http_request = require("coro-http").request
+
+local json_decode = require("json").decode
+
+local next = next
+
+local str_sub = string.sub
+
+local os_date = os.date
+
+local tbl_concat = table.concat
+
+local tostring = tostring
+
+----------------------------------------------------------------------------------------------------
 
 local alertChannels = {
 	"int-breach"
@@ -22,16 +39,16 @@ local getNewBreaches = function()
 		lastBreaches[message.embed.thumbnail.url] = true
 	end
 
-	local today = os.date("%Y-%m-%d")
+	local today = os_date("%Y-%m-%d")
 
-	local _, breaches = http.request("GET", "https://haveibeenpwned.com/api/v2/breaches")
-	breaches = json.decode(breaches)
+	local _, breaches = http_request("GET", "https://haveibeenpwned.com/api/v2/breaches")
+	breaches = json_decode(breaches)
 
 	local newBreaches, totalNewBreaches = { }, 0
 	for breach = 1, #breaches do
 		breach = breaches[breach]
 
-		if breach.AddedDate:sub(1, 10) == today and not lastBreaches[breach.LogoPath] then
+		if str_sub(breach.AddedDate, 1, 10) == today and not lastBreaches[breach.LogoPath] then
 			totalNewBreaches = totalNewBreaches + 1
 			newBreaches[totalNewBreaches] = {
 				embed = {
@@ -49,7 +66,7 @@ local getNewBreaches = function()
 					fields = {
 						[1] = {
 							name = "What has been compromised?",
-							value = "• " .. table.concat(breach.DataClasses, "\n• "),
+							value = "• " .. tbl_concat(breach.DataClasses, "\n• "),
 							inline = true
 						},
 						[2] = {

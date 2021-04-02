@@ -1,13 +1,32 @@
-local http = require("coro-http")
-local json = require("json")
-
 local temporaryObject = require("../utils/temporaryObject")
 local utils = require("../utils/utils")
-local colors = require("../utils/colors")
+local colors = require("../utils/enums/colors")
 
-local _countryFlags = require("../utils/country-flags")
+local _countryFlags = require("../utils/enums/country-flags")
+
+------------------------------------------- Optimization -------------------------------------------
+
 local countryFlags = _countryFlags.countryFlags
 local countryFlagsAliases = _countryFlags.countryFlagsAliases
+
+local http_request = require("coro-http").request
+
+local json_decode = require("json").decode
+
+local str_gsub = string.gsub
+local str_lower = string.lower
+local str_match = string.match
+local str_sub = string.sub
+local str_upper = string.upper
+
+local tbl_concat = table.concat
+
+local tonumber = tonumber
+local tostring = tostring
+
+----------------------------------------------------------------------------------------------------
+
+local googleHeader = { { "User-Agent","Mozilla/5.0" } }
 
 return {
 	syntax = "translate [`country_from`-`country_to` | `country_to`]* [`text`]*",
@@ -21,7 +40,7 @@ return {
 			return utils.sendError(message, "TRANSLATE", "Missing parameters.", syntax)
 		end
 
-		local language, content = string.match(parameters, "(%S+)[ \n]+(.+)$")
+		local language, content = str_match(parameters, "(%S+)[ \n]+(.+)$")
 		if not language or not content or content == '' then
 			return utils.sendError(message, "TRANSLATE", "Invalid parameters.", syntax)
 		end
@@ -31,31 +50,31 @@ return {
 			if msgContent then
 				msgContent = msgContent.content or
 					(msgContent.embed and msgContent.embed.description)
-				content = (msgContent and (string.gsub(msgContent, '`', '')) or content)
+				content = (msgContent and (str_gsub(msgContent, '`', '')) or content)
 			end
 		end
 
-		language = string.lower(language)
-		local sourceLanguage, targetLanguage = string.match(language, "^(..)[%-~]>?(..)$")
+		language = str_lower(language)
+		local sourceLanguage, targetLanguage = str_match(language, "^(..)[%-~]>?(..)$")
 		if not sourceLanguage then
 			sourceLanguage = "auto"
 			targetLanguage = language
 		end
 
-		content = string.sub(content, 1, 250)
-		local head, body = http.request("GET", "https://translate.googleapis.com/translate_a/\z
+		content = str_sub(content, 1, 250)
+		local head, body = http_request("GET", "https://translate.googleapis.com/translate_a/\z
 			single?client=gtx&sl=" .. sourceLanguage .. "&tl=" .. targetLanguage .. "&dt=t&q=" ..
-			utils.encodeUrl(content), { { "User-Agent","Mozilla/5.0" } })
-		body = json.decode(tostring(body))
+			utils.encodeUrl(content), googleHeader)
+		body = json_decode(tostring(body))
 
 		if not body or body == '' then
 			return utils.sendError(message, "TRANSLATE", "Internal Error.", "Couldn't translate \z
 				```\n" .. parameters .. "```")
 		end
 
-		sourceLanguage = string.upper((sourceLanguage == "auto" and tostring(body[3])
+		sourceLanguage = str_upper((sourceLanguage == "auto" and tostring(body[3])
 			or sourceLanguage))
-		targetLanguage = string.upper(targetLanguage)
+		targetLanguage = str_upper(targetLanguage)
 
 		sourceLanguage = countryFlagsAliases[sourceLanguage] or sourceLanguage
 		targetLanguage = countryFlagsAliases[targetLanguage] or targetLanguage
@@ -66,7 +85,7 @@ return {
 		for word = 1, #rawContent do
 			translatedText[word] = rawContent[word][1]
 		end
-		translatedText = table.concat(translatedText, ' ')
+		translatedText = tbl_concat(translatedText, ' ')
 
 		temporaryObject[message.id] = message:reply({
 			embed = {
@@ -74,7 +93,7 @@ return {
 				title = ":earth_americas: Quick Translation",
 				description = (countryFlags[sourceLanguage] or '') .. "@**" .. sourceLanguage ..
 					"**\n```\n" .. content .. "```" .. (countryFlags[targetLanguage] or '') ..
-					"@**" .. string.upper(targetLanguage) .. "**\n```\n" .. translatedText .. "```"
+					"@**" .. str_upper(targetLanguage) .. "**\n```\n" .. translatedText .. "```"
 			}
 		})
 	end

@@ -1,7 +1,14 @@
 local _discord = require("../discord")
+
+------------------------------------------- Optimization -------------------------------------------
+
 local discord, protect = _discord.discord, _discord.protect
 
 local guilds = require("../utils/discord-objects").guilds
+
+local next = next
+
+----------------------------------------------------------------------------------------------------
 
 local roleFlags = { }
 
@@ -22,8 +29,6 @@ local createGuildRoleFlags = function()
 	end
 end
 
-discord:once("ready", protect(function()
-	createGuildRoleFlags()
-end))
+discord:once("ready", protect(createGuildRoleFlags))
 
 return roleFlags
