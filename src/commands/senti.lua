@@ -86,13 +86,19 @@ return {
 		end
 
 		local filterWarnings = string.upper(tostring(parameters.warn)) ~= "FALSE"
-		if data.warnings then
+		if filterWarnings and data.warnings then
 			table.add(sanctions, data.warnings)
 		end
 
-		local filterReports = string.upper(tostring(parameters.warn)) ~= "FALSE"
-		if data.handledReports then
+		local filterReports = string.upper(tostring(parameters.report)) ~= "FALSE"
+		if filterReports and data.handledReports then
 			table.add(sanctions, data.handledReports)
+		end
+
+		local filterModeratedAndDeletedMessages =
+			string.upper(tostring(parameters.message)) ~= "FALSE"
+		if filterModeratedAndDeletedMessages and data.moderatedMessages then
+			table.add(sanctions, data.moderatedMessages)
 		end
 
 		local footer = {
@@ -110,10 +116,14 @@ return {
 		if not rawReasonsLen then
 			local sanctionTypes = table.copy(activity.sanctionTypes.sentinel)
 			if filterWarnings then
-				sanctionTypes["warn"] = true
+				sanctionTypes[activity.sentinelMiscTypes["warnings"]] = true
 			end
 			if filterReports then
-				sanctionTypes["handledreport"] = true
+				sanctionTypes[activity.sentinelMiscTypes["reports"]] = true
+			end
+			if filterModeratedAndDeletedMessages then
+				sanctionTypes[activity.sentinelMiscTypes["moderated"]] = true
+				sanctionTypes[activity.sentinelMiscTypes["deleted"]] = true
 			end
 
 			rawReasons =  { }
