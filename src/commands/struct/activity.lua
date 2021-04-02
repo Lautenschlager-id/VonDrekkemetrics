@@ -16,6 +16,7 @@ local next = next
 local str_find = string.find
 local str_lower = string.lower
 local str_split = string.split
+local str_sub = string.sub
 local str_upper = string.upper
 
 local tbl_add = table.add
@@ -300,7 +301,10 @@ end
 
 local getIterablePlayerList = function(parameters)
 	local iterableNicknames, totalIterableNicknames = parameters.nick
-	local nicknamesList = tbl_concat(iterableNicknames, '\n')
+	local nicknamesList = tbl_concat(iterableNicknames, ", ")
+	if #nicknamesList > 1900 then
+		nicknamesList = str_sub(nicknamesList, 1, 1900) .. "..."
+	end
 
 	if parameters.members then
 		totalIterableNicknames = #iterableNicknames
@@ -381,8 +385,11 @@ local displayFilteredData = function(message, parameters, commandName, reasons, 
 	end
 
 	if parameters.debug then
+		data = json_encode(data)
+
+		p("[DEBUG] Len: ", #data)
 		message:reply({
-			file = { "audition_data.json", json_encode(data) }
+			file = { "audition_data.json", data }
 		})
 	end
 
