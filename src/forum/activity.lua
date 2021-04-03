@@ -133,7 +133,8 @@ local normalizeBodyData = function(registry, accordionName, playerName)
 		registry.__checkType = true
 	end
 
-	registry.__messageSource = registry.__messageSource and str_lower(registry.__messageSource)
+	registry.__messageSource =
+		not registry.__messageSource and '' or str_lower(registry.__messageSource)
 
 	return registry
 end
