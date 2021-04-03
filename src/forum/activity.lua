@@ -116,7 +116,7 @@ local normalizeBodyData = function(registry, accordionName, playerName)
 	elseif accordionName == "handledReports" then
 		registry.__type = sentinelMiscTypes["reports"]
 		registry.__sourceDate = registry.Date
-		registry.__messageSource = registry.Message
+		registry.__messageSource = registry.Type
 		registry.__checkType = true
 	elseif accordionName == "moderatedMessages" then
 		registry.isDeleted = registry.MessageState == "supprime"
