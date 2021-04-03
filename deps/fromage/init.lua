@@ -812,6 +812,7 @@ return function()
 		end
 
 		local body = this.getPage(forumUri.conversations)
+		p("[FORUM DEBUG] isConnected", body)
 		local isAlive = not (string.find(body, htmlChunk.error_503) or string.find(body, htmlChunk.not_connected))
 		if not isAlive then
 			newThis()
