@@ -19,7 +19,7 @@ local getYear = function(value)
 	local currentYear = os_date("%Y")*1
 	if value then
 		value = tonumber(value)
-		value = (value >= currentYear-2 and value or nil)
+		value = (value >= currentYear-5 and value or nil)
 	end
 	return value or currentYear
 end
