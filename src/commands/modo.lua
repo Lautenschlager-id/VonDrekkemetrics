@@ -36,7 +36,7 @@ return {
 			activityStruct.captureActivityDate(self, message, parameters, "modo")
 		if not data then return end
 
-		local reasons, fields, rawReasonsLen =
+		local reasons, fields, rawReasonsLen, runtimeWhileBusy =
 			activityStruct.processActivityData(message, parameters, "modo", data, firstDayRange,
 				lastDayRange, runtimeWhileBusy)
 
