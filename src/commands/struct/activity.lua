@@ -360,11 +360,15 @@ local executeDebug = function(message, data, runtimeWhileBusy, nicknames)
 		file = { "audition_data.json", data }
 	})
 
+	local runtimeTotal = runtimeWhileBusy.validatePlayerList + runtimeWhileBusy.filter
+		+ runtimeWhileBusy.display
+
 	local getActivityData, tmpData = runtimeWhileBusy.getActivityData
 	for m = 1, #getActivityData do
 		tmpData = getActivityData[m]
-		getActivityData[m] = str_format("[%s → %.03fs (%.03fs/page)]", nicknames[m],
+		getActivityData[m] = str_format("%s → %.03fs (%.03fs/page)", nicknames[m],
 			tmpData.runtime, tmpData.runtime / tmpData.totalPages)
+		runtimeTotal = runtimeTotal + tmpData.runtime
 	end
 
 	p("[DEBUG] Runtime")
@@ -376,10 +380,11 @@ local executeDebug = function(message, data, runtimeWhileBusy, nicknames)
 				"Validating player list: %.03fs\n\z
 				Reason and date filter: %.03fs\n\z
 				Display processing: %.03fs\n\n\z
-				Activity extraction per player:\n\t%s",
+				Activity extraction per player:\n%s\n\n\z
+				Total runtime: %.03fs",
 
 				runtimeWhileBusy.validatePlayerList, runtimeWhileBusy.filter,
-				runtimeWhileBusy.display, tbl_concat(getActivityData, " | "))
+				runtimeWhileBusy.display, tbl_concat(getActivityData, "\n")), runtimeTotal
 		}
 	})
 end

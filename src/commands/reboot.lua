@@ -1,3 +1,5 @@
+local reactions = require("../utils/enums/reactions")
+
 return {
 	isAdminOnly = true,
 
@@ -11,6 +13,8 @@ return {
 	},
 
 	execute = function(self, message, parameters)
+		message:addReaction(reactions.online)
+
 		os.execute(args[0] .. " " .. args[1])
 		os.exit()
 	end
