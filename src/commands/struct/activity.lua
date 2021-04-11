@@ -173,7 +173,7 @@ local captureActivityDate = function(self, message, parameters, commandName)
 	if not validatePlayerList(message, parameters, commandSettings) then
 		return unsetBusy(message, reactions.dnd)
 	end
-	runtimeWhileBusy.validatePlayerList = (os_clock() - runtime)
+	runtimeWhileBusy.validatePlayerList = (os_clock() - runtime) * 1000
 
 	local activityRuntime = runtimeWhileBusy.getActivityData
 
@@ -183,7 +183,7 @@ local captureActivityDate = function(self, message, parameters, commandName)
 		tmpActivity, tmpTotalPages = activity.getActivityData(parameters.nick[member],
 			commandSettings.type, firstDayRange)
 		activityRuntime[member] = {
-			runtime = (os_clock() - runtime),
+			runtime = (os_clock() - runtime) * 1000,
 			totalPages = tmpTotalPages
 		}
 
@@ -314,7 +314,7 @@ local processActivityData = function(message, parameters, commandName, data, fir
 			end
 		end
 	end
-	runtimeWhileBusy.filter = (os_clock() - runtimeWhileBusy.filter)
+	runtimeWhileBusy.filter = (os_clock() - runtimeWhileBusy.filter) * 1000
 
 	return reasons, fields, rawReasonsLen, runtimeWhileBusy
 end
@@ -441,7 +441,7 @@ local displayFilteredData = function(message, parameters, commandName, reasons, 
 			tmpPayload.content = nil
 		end
 	end
-	runtimeWhileBusy.display = (os_clock() - runtimeWhileBusy.display)
+	runtimeWhileBusy.display = (os_clock() - runtimeWhileBusy.display) * 1000
 
 	if parameters.debug then
 		executeDebug(message, data, runtimeWhileBusy, parameters.nick)
