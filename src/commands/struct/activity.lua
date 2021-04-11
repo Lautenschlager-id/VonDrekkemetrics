@@ -384,7 +384,7 @@ local executeDebug = function(message, data, runtimeWhileBusy, nicknames)
 				Total runtime: %.03fs",
 
 				runtimeWhileBusy.validatePlayerList, runtimeWhileBusy.filter,
-				runtimeWhileBusy.display, tbl_concat(getActivityData, "\n")), runtimeTotal
+				runtimeWhileBusy.display, tbl_concat(getActivityData, "\n"), runtimeTotal)
 		}
 	})
 end
