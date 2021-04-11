@@ -288,7 +288,7 @@ do
 			"Last page: " .. tostring(not foundOccurenceOfTargetDate))
 
 		if _totalPages == _pageNumber or not foundOccurenceOfTargetDate then
-			return _data
+			return _data, _pageNumber
 		end
 		return _getActivityData(playerName, role, targetDate, _pageNumber + 1, _data,
 			_rawPlayerName, _totalPages)

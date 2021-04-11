@@ -25,9 +25,11 @@ return {
 		if not parameters then
 			local cmds, counter = { }, 0
 			for cmd, obj in utils.pairsByIndexes(commands) do
-				counter = counter + 1
-				cmds[counter] = str_format(":small_orange_diamond: **/%s** - %s",
-					obj.syntax or cmd, obj.description or '')
+				if not obj.isAdminOnly then
+					counter = counter + 1
+					cmds[counter] = str_format(":small_orange_diamond: **/%s** - %s",
+						obj.syntax or cmd, obj.description or '')
+				end
 			end
 
 			embed = {
@@ -39,7 +41,7 @@ return {
 			parameters = str_lower(parameters)
 
 			local command = commands[parameters]
-			if command then
+			if command and not command.isAdminOnly then
 				embed = {
 					color = colors.info,
 					title = ":loudspeaker: Help ~> '/" .. parameters .. "'",

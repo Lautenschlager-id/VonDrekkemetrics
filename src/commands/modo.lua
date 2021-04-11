@@ -32,15 +32,15 @@ return {
 	usesForum = true,
 
 	execute = function(self, message, parameters)
-		local parameters, data, firstDayRange, lastDayRange =
+		local parameters, data, firstDayRange, lastDayRange, runtimeWhileBusy =
 			activityStruct.captureActivityDate(self, message, parameters, "modo")
 		if not data then return end
 
-		local reasons, fields, rawReasonsLen =
+		local reasons, fields, rawReasonsLen, runtimeWhileBusy =
 			activityStruct.processActivityData(message, parameters, "modo", data, firstDayRange,
 				lastDayRange)
 
 		activityStruct.displayFilteredData(message, parameters, "modo", reasons, fields,
-			rawReasonsLen, data)
+			rawReasonsLen, data, runtimeWhileBusy)
 	end
 }

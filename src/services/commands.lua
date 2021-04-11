@@ -30,8 +30,24 @@ local commands = {
 	["translate"] = true,
 	["list"] = true,
 	["modo"] = true,
-	["senti"] = true
+	["senti"] = true,
+	["reboot"] = true
 }
+
+--[[
+	isAdminOnly = false, -- whether only bot admins can trigger the command
+
+	syntax = "", -- command syntax
+	descripton = "", -- command descripton
+
+	aliases = { ... }, -- command aliases
+
+	channel = { [...] = true }, -- channels in which the command can be triggered
+
+	usesForum = true, -- whether the commands uses the forum (_BUSY)
+
+	execute = fn(message, parameters)
+]]
 
 local loadCommands = function()
 	p("[LOAD] Command Handler")
@@ -44,7 +60,7 @@ local loadCommands = function()
 		tmpAliases = commands[command].aliases
 		if tmpAliases then
 			for alias = 1, #tmpAliases do
-				commands[tmpAliases[alias]] = command
+				--commands[tmpAliases[alias]] = command
 			end
 		end
 	end
@@ -66,13 +82,13 @@ local getCommandAttempt = function(content)
 end
 
 local messageHasPermissionCommandTrigger = function(commandObj, message)
-	if commandObj.channel then
-		if not commandObj.channel[message.channel.id]
-			and message.channel.id ~= channels["debug"].id then
-			utils.sendError(message, "403", "Access denied.", "You cannot use this \z
-				command in this channel.", colors.error)
-			return false
-		end
+	if (commandObj.channel and (not commandObj.channel[message.channel.id]
+			and message.channel.id ~= channels["debug"].id))
+		or (commandObj.isAdminOnly and discord.owner.id ~= message.author.id)
+	then
+		utils.sendError(message, "403", "Access denied.", "You cannot use this \z
+			command in this channel.", colors.error)
+		return false
 	end
 	return true
 end

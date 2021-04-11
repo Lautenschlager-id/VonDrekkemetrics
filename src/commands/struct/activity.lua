@@ -2,6 +2,7 @@ local activity = require("../../forum/activity")
 
 local utils = require("../../utils/utils")
 local reactions = require("../../utils/enums/reactions")
+local colors = require("../../utils/enums/colors")
 
 ------------------------------------------- Optimization -------------------------------------------
 
@@ -14,6 +15,7 @@ local json_encode = require("json").encode
 local next = next
 
 local str_find = string.find
+local str_format = string.format
 local str_lower = string.lower
 local str_split = string.split
 local str_sub = string.sub
@@ -26,6 +28,8 @@ local tbl_copy = table.copy
 
 local tostring = tostring
 local type = type
+
+local os_clock = os.clock
 
 ----------------------------------------------------------------------------------------------------
 
@@ -92,7 +96,12 @@ local setBusy = function(message)
 
 	message:addReaction(reactions.idle)
 
-	return true
+	return {
+		validatePlayerList = 0,
+		getActivityData = { },
+		filter = 0,
+		display = 0
+	}
 end
 
 local unsetBusy = function(message, reactionType)
@@ -158,16 +167,25 @@ local captureActivityDate = function(self, message, parameters, commandName)
 	local firstDayRange, lastDayRange = getDataRange(parameters)
 	checkVariableBoolParam(commandName, parameters)
 
-	setBusy(message)
+	local runtimeWhileBusy = setBusy(message)
 
+	local runtime = os_clock()
 	if not validatePlayerList(message, parameters, commandSettings) then
 		return unsetBusy(message, reactions.dnd)
 	end
+	runtimeWhileBusy.validatePlayerList = (os_clock() - runtime)
 
-	local data, tmpActivity = { }
+	local activityRuntime = runtimeWhileBusy.getActivityData
+
+	local data, tmpActivity, tmpTotalPages = { }
 	for member = 1, #parameters.nick do
-		tmpActivity = activity.getActivityData(parameters.nick[member], commandSettings.type,
-			firstDayRange)
+		runtime = os_clock()
+		tmpActivity, tmpTotalPages = activity.getActivityData(parameters.nick[member],
+			commandSettings.type, firstDayRange)
+		activityRuntime[member] = {
+			runtime = (os_clock() - runtime),
+			totalPages = tmpTotalPages
+		}
 
 		for k, v in next, tmpActivity do -- Adds to all-members' data
 			if not data[k] then
@@ -179,7 +197,7 @@ local captureActivityDate = function(self, message, parameters, commandName)
 	end
 	unsetBusy()
 
-	return parameters, data, firstDayRange, lastDayRange
+	return parameters, data, firstDayRange, lastDayRange, runtimeWhileBusy
 end
 
 local transformActivityDataIntoSimpleTable = function(commandName, complexTable, parameters)
@@ -251,7 +269,7 @@ local parseReasons = function(rawReasons, rawReasonsLen)
 end
 
 local processActivityData = function(message, parameters, commandName, data, firstDayRange,
-	lastDayRange)
+	lastDayRange, runtimeWhileBusy)
 	data = transformActivityDataIntoSimpleTable(commandName, data, parameters)
 
 	local filterAllTime = parameters.alltime
@@ -263,6 +281,7 @@ local processActivityData = function(message, parameters, commandName, data, fir
 	local tmpPattern, tmpReasonObj
 
 	-- Filter and count
+	runtimeWhileBusy.filter = os_clock()
 	for dataObj = 1, #data do
 		dataObj = data[dataObj]
 
@@ -295,8 +314,9 @@ local processActivityData = function(message, parameters, commandName, data, fir
 			end
 		end
 	end
+	runtimeWhileBusy.filter = (os_clock() - runtimeWhileBusy.filter)
 
-	return reasons, fields, rawReasonsLen
+	return reasons, fields, rawReasonsLen, runtimeWhileBusy
 end
 
 local getIterablePlayerList = function(parameters)
@@ -332,8 +352,40 @@ local getFooter = function(parameters)
 	return footer
 end
 
+local executeDebug = function(message, data, runtimeWhileBusy, nicknames)
+	data = json_encode(data)
+
+	p("[DEBUG] Data Len: ", #data)
+	message:reply({
+		file = { "audition_data.json", data }
+	})
+
+	local getActivityData, tmpData = runtimeWhileBusy.getActivityData
+	for m = 1, #getActivityData do
+		tmpData = getActivityData[m]
+		getActivityData[m] = str_format("[%s → %.03fs (%.03fs/page)]", nicknames[m],
+			tmpData.runtime, tmpData.runtime / tmpData.totalPages)
+	end
+
+	p("[DEBUG] Runtime")
+	message:reply({
+		embed = {
+			color = colors.info,
+			title = "⏰ Runtime",
+			description = str_format(
+				"Validating player list: %.03fs\n\z
+				Reason and date filter: %.03fs\n\z
+				Display processing: %.03fs\n\n\z
+				Activity extraction per player:\n\t%s",
+
+				runtimeWhileBusy.validatePlayerList, runtimeWhileBusy.filter,
+				runtimeWhileBusy.display, tbl_concat(getActivityData, " | "))
+		}
+	})
+end
+
 local displayFilteredData = function(message, parameters, commandName, reasons, fields,
-	rawReasonsLen, data)
+	rawReasonsLen, data, runtimeWhileBusy)
 	local iterableNicknames, totalIterableNicknames, nicknamesList =
 		getIterablePlayerList(parameters)
 
@@ -355,6 +407,7 @@ local displayFilteredData = function(message, parameters, commandName, reasons, 
 	local totalFields, tmpFieldRangeLimit = #fields
 	local tmpNickname
 
+	runtimeWhileBusy.display = os_clock()
 	for member = 1, totalIterableNicknames do
 		tmpNickname = iterableNicknames[member]
 
@@ -383,14 +436,10 @@ local displayFilteredData = function(message, parameters, commandName, reasons, 
 			tmpPayload.content = nil
 		end
 	end
+	runtimeWhileBusy.display = (os_clock() - runtimeWhileBusy.display)
 
 	if parameters.debug then
-		data = json_encode(data)
-
-		p("[DEBUG] Len: ", #data)
-		message:reply({
-			file = { "audition_data.json", data }
-		})
+		executeDebug(message, data, runtimeWhileBusy, parameters.nick)
 	end
 
 	unsetBusy(message, reactions.online)

@@ -37,15 +37,15 @@ return {
 	usesForum = true,
 
 	execute = function(self, message, parameters)
-		local parameters, data, firstDayRange, lastDayRange =
+		local parameters, data, firstDayRange, lastDayRange, runtimeWhileBusy =
 			activityStruct.captureActivityDate(self, message, parameters, "senti")
 		if not data then return end
 
-		local reasons, fields, rawReasonsLen =
+		local reasons, fields, rawReasonsLen, runtimeWhileBusy =
 			activityStruct.processActivityData(message, parameters, "senti", data, firstDayRange,
-				lastDayRange)
+				lastDayRange, runtimeWhileBusy)
 
 		activityStruct.displayFilteredData(message, parameters, "senti", reasons, fields,
-			rawReasonsLen, data)
+			rawReasonsLen, data, runtimeWhileBusy)
 	end
 }
