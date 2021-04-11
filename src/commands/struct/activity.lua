@@ -29,7 +29,7 @@ local tbl_copy = table.copy
 local tostring = tostring
 local type = type
 
-local os_clock = os.clock
+local os_time = os.time
 
 ----------------------------------------------------------------------------------------------------
 
@@ -169,21 +169,21 @@ local captureActivityDate = function(self, message, parameters, commandName)
 
 	local runtimeWhileBusy = setBusy(message)
 
-	local runtime = os_clock()
+	local runtime = os_time()
 	if not validatePlayerList(message, parameters, commandSettings) then
 		return unsetBusy(message, reactions.dnd)
 	end
-	runtimeWhileBusy.validatePlayerList = (os_clock() - runtime) * 1000
+	runtimeWhileBusy.validatePlayerList = (os_time() - runtime)
 
 	local activityRuntime = runtimeWhileBusy.getActivityData
 
 	local data, tmpActivity, tmpTotalPages = { }
 	for member = 1, #parameters.nick do
-		runtime = os_clock()
+		runtime = os_time()
 		tmpActivity, tmpTotalPages = activity.getActivityData(parameters.nick[member],
 			commandSettings.type, firstDayRange)
 		activityRuntime[member] = {
-			runtime = (os_clock() - runtime) * 1000,
+			runtime = (os_time() - runtime),
 			totalPages = tmpTotalPages
 		}
 
@@ -281,7 +281,7 @@ local processActivityData = function(message, parameters, commandName, data, fir
 	local tmpPattern, tmpReasonObj
 
 	-- Filter and count
-	runtimeWhileBusy.filter = os_clock()
+	runtimeWhileBusy.filter = os_time()
 	for dataObj = 1, #data do
 		dataObj = data[dataObj]
 
@@ -314,7 +314,7 @@ local processActivityData = function(message, parameters, commandName, data, fir
 			end
 		end
 	end
-	runtimeWhileBusy.filter = (os_clock() - runtimeWhileBusy.filter) * 1000
+	runtimeWhileBusy.filter = (os_time() - runtimeWhileBusy.filter)
 
 	return reasons, fields, rawReasonsLen, runtimeWhileBusy
 end
@@ -366,7 +366,7 @@ local executeDebug = function(message, data, runtimeWhileBusy, nicknames)
 	local getActivityData, tmpData = runtimeWhileBusy.getActivityData
 	for m = 1, #getActivityData do
 		tmpData = getActivityData[m]
-		getActivityData[m] = str_format("%s → %.03fs (%.03fs/page)", nicknames[m],
+		getActivityData[m] = str_format("%s → %ds (%ds/page)", nicknames[m],
 			tmpData.runtime, tmpData.runtime / tmpData.totalPages)
 		runtimeTotal = runtimeTotal + tmpData.runtime
 	end
@@ -377,11 +377,11 @@ local executeDebug = function(message, data, runtimeWhileBusy, nicknames)
 			color = colors.info,
 			title = "⏰ Runtime",
 			description = str_format(
-				"Validating player list: %.03fs\n\z
-				Reason and date filter: %.03fs\n\z
-				Display processing: %.03fs\n\n\z
+				"Validating player list: %ds\n\z
+				Reason and date filter: %ds\n\z
+				Display processing: %ds\n\n\z
 				Activity extraction per player:\n%s\n\n\z
-				Total runtime: %.03fs",
+				Total runtime: %ds",
 
 				runtimeWhileBusy.validatePlayerList, runtimeWhileBusy.filter,
 				runtimeWhileBusy.display, tbl_concat(getActivityData, "\n"), runtimeTotal)
@@ -412,7 +412,7 @@ local displayFilteredData = function(message, parameters, commandName, reasons, 
 	local totalFields, tmpFieldRangeLimit = #fields
 	local tmpNickname
 
-	runtimeWhileBusy.display = os_clock()
+	runtimeWhileBusy.display = os_time()
 	for member = 1, totalIterableNicknames do
 		tmpNickname = iterableNicknames[member]
 
@@ -441,7 +441,7 @@ local displayFilteredData = function(message, parameters, commandName, reasons, 
 			tmpPayload.content = nil
 		end
 	end
-	runtimeWhileBusy.display = (os_clock() - runtimeWhileBusy.display) * 1000
+	runtimeWhileBusy.display = (os_time() - runtimeWhileBusy.display)
 
 	if parameters.debug then
 		executeDebug(message, data, runtimeWhileBusy, parameters.nick)
