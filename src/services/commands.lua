@@ -130,6 +130,9 @@ discord:on("messageCreate", protect(function(message)
 	-- Skips bot messages
 	if message.author.bot then return end
 
+	-- Private message
+	if message.channel.type == 1 then return end
+
 	checkCommandAttempt(message)
 end))
 
