@@ -28,15 +28,16 @@ local alertChannels = {
 	"int-breach"
 }
 
-local maximumLookupMessages = 10
+local maximumLookupMessages = 15
 
 local getNewBreaches = function()
 	local _, lookupChannel = next(alertChannels)
 
 	local lastBreaches = { }
 	for message in channels[lookupChannel]:getMessages(maximumLookupMessages):iter() do
-		if not (message.embed and message.embed.thumbnail) then break end
-		lastBreaches[message.embed.thumbnail.url] = true
+		if message.embed and message.embed.thumbnail then
+			lastBreaches[message.embed.thumbnail.url] = true
+		end
 	end
 
 	local today = os_date("%Y-%m-%d")
