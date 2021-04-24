@@ -12,6 +12,7 @@ local channels = {
 	-- Int Staff
 	["int-main"] = "800100513718075414", -- #staff-utils
 	["int-breach"] = "814497990948814918", -- #data-breaches
+	["int-sent-only"] = "835519281427906611", -- #senti-only
 
 	-- Br Staff
 	["br-utils"] = "826082697185198140", -- #bot-utils
