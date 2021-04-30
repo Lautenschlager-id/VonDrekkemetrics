@@ -9,5 +9,6 @@ table.addSet(utils, require("./extensions/error"))
 table.addSet(utils, require("./extensions/calendar"))
 table.addSet(utils, require("./extensions/player"))
 table.addSet(utils, require("./extensions/commands"))
+table.addSet(utils, require("./extensions/binBase64"))
 
 return utils
