@@ -29,7 +29,6 @@ end
 
 --[=[
 @m getBeforeAfter
-@t mem
 @r table
 @r table
 @d Returns two tables of the target's properties before the change, and after the change.
@@ -156,10 +155,16 @@ local targets = setmetatable({
 
 --[=[
 @m getTarget
-@t http?
 @r *
-@d Gets the target object of the affected entity. The returned object can be: [[Guild]],
-[[GuildChannel]], [[User]], [[Member]], [[Role]], [[Webhook]], [[Emoji]], nil
+@d Gets the target object of the affected entity. The returned object can be:
+ - [[Guild]]
+ - [[GuildChannel]]
+ - [[User]]
+ - [[Member]]
+ - [[Role]]
+ - [[Webhook]]
+ - [[Emoji]]
+ - nil
 ]=]
 function AuditLogEntry:getTarget()
 	return targets[self._action_type](self)
@@ -167,7 +172,6 @@ end
 
 --[=[
 @m getUser
-@t http?
 @r User
 @d Gets the user who performed the changes.
 ]=]
@@ -177,8 +181,7 @@ end
 
 --[=[
 @m getMember
-@t http?
-@r Member/nil
+@r Member
 @d Gets the member object of the user who performed the changes.
 ]=]
 function AuditLogEntry:getMember()
@@ -197,21 +200,14 @@ function get.options(self)
 	return self._options
 end
 
---[=[@p actionType number The action type. Use the `actionType `enumeration
-for a human-readable representation.]=]
+--[=[@p actionType number The action type. Use the `actionType `enumeration for a human-readable representation.]=]
 function get.actionType(self)
 	return self._action_type
 end
 
---[=[@p targetId string/nil The Snowflake ID of the affected entity. Will
-be `nil` for certain targets.]=]
+--[=[@p targetId string/nil The Snowflake ID of the affected entity. Will be `nil` for certain targets.]=]
 function get.targetId(self)
 	return self._target_id
-end
-
---[=[@p userId string The Snowflake ID of the user who commited the action.]=]
-function get.userId(self)
-	return self._user_id
 end
 
 --[=[@p reason string/nil The reason provided by the user for the change.]=]

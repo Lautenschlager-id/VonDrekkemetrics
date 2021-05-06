@@ -18,7 +18,6 @@ end
 
 --[=[
 @m setBitrate
-@t http
 @p bitrate number
 @r boolean
 @d Sets the channel's audio bitrate in bits per second (bps). This must be between
@@ -31,7 +30,6 @@ end
 
 --[=[
 @m setUserLimit
-@t http
 @p user_limit number
 @r boolean
 @d Sets the channel's user limit. This must be between 0 and 99 (where 0 is
@@ -43,7 +41,6 @@ end
 
 --[=[
 @m join
-@t ws
 @r VoiceConnection
 @d Join this channel and form a connection to the Voice Gateway.
 ]=]
@@ -93,7 +90,6 @@ end
 
 --[=[
 @m leave
-@t http
 @r boolean
 @d Leave this channel if there is an existing voice connection to it.
 Equivalent to GuildVoiceChannel.connection:close()
@@ -118,7 +114,7 @@ function get.userLimit(self)
 	return self._user_limit
 end
 
---[=[@p connectedMembers TableIterable An iterable of all users connected to the channel.]=]
+--[=[@p connectedMembers TableIterable The channel's user limit. This should between 0 and 99 (where 0 is unlimited).]=]
 function get.connectedMembers(self)
 	if not self._connected_members then
 		local id = self._id

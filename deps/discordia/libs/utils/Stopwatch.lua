@@ -1,7 +1,5 @@
 --[=[
-@c Stopwatch
-@t ui
-@mt mem
+@ic Stopwatch
 @d Used to measure an elapsed period of time. If a truthy value is passed as an
 argument, then the stopwatch will initialize in an idle state; otherwise, it will
 initialize in an active state. Although nanosecond precision is available, Lua

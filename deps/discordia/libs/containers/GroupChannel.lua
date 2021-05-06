@@ -22,7 +22,6 @@ end
 
 --[=[
 @m setName
-@t http
 @p name string
 @r boolean
 @d Sets the channel's name. This must be between 1 and 100 characters in length.
@@ -33,7 +32,6 @@ end
 
 --[=[
 @m setIcon
-@t http
 @p icon Base64-Resolvable
 @r boolean
 @d Sets the channel's icon. To remove the icon, pass `nil`.
@@ -45,7 +43,6 @@ end
 
 --[=[
 @m addRecipient
-@t http
 @p id User-ID-Resolvable
 @r boolean
 @d Adds a user to the channel.
@@ -62,7 +59,6 @@ end
 
 --[=[
 @m removeRecipient
-@t http
 @p id User-ID-Resolvable
 @r boolean
 @d Removes a user from the channel.
@@ -79,7 +75,6 @@ end
 
 --[=[
 @m leave
-@t http
 @r boolean
 @d Removes the client's user from the channel. If no users remain, the channel
 is destroyed.

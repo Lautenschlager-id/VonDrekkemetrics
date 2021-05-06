@@ -41,22 +41,11 @@ function Guild:__init(data, parent)
 	end
 end
 
-function Guild:_load(data)
-	Snowflake._load(self, data)
-	return self:_loadMore(data)
-end
-
-function Guild:_loadMore(data)
-	if data.features then
-		self._features = data.features
-	end
-end
-
 function Guild:_makeAvailable(data)
 
 	self._roles:_load(data.roles)
 	self._emojis:_load(data.emojis)
-	self:_loadMore(data)
+	self._features = data.features
 
 	if not data.channels then return end -- incomplete guild
 
@@ -71,7 +60,7 @@ function Guild:_makeAvailable(data)
 
 	for _, channel in ipairs(data.channels) do
 		local t = channel.type
-		if t == channelType.text or t == channelType.news then
+		if t == channelType.text then
 			text_channels:_insert(channel)
 		elseif t == channelType.voice then
 			voice_channels:_insert(channel)
@@ -110,7 +99,6 @@ end
 
 --[=[
 @m requestMembers
-@t ws
 @r boolean
 @d Asynchronously loads all members for this guild. You do not need to call this
 if the `cacheAllMembers` client option (and the `syncGuilds` option for
@@ -129,7 +117,6 @@ end
 
 --[=[
 @m sync
-@t ws
 @r boolean
 @d Asynchronously loads certain data and enables the receiving of certain events
 for this guild. You do not need to call this if the `syncGuilds` client option
@@ -150,7 +137,6 @@ end
 
 --[=[
 @m getMember
-@t http?
 @p id User-ID-Resolvable
 @r Member
 @d Gets a member object by ID. If the object is already cached, then the cached
@@ -173,7 +159,6 @@ end
 
 --[=[
 @m getRole
-@t mem
 @p id Role-ID-Resolvable
 @r Role
 @d Gets a role object by ID.
@@ -185,7 +170,6 @@ end
 
 --[=[
 @m getEmoji
-@t mem
 @p id Emoji-ID-Resolvable
 @r Emoji
 @d Gets a emoji object by ID.
@@ -197,7 +181,6 @@ end
 
 --[=[
 @m getChannel
-@t mem
 @p id Channel-ID-Resolvable
 @r GuildChannel
 @d Gets a text, voice, or category channel object by ID.
@@ -209,7 +192,6 @@ end
 
 --[=[
 @m createTextChannel
-@t http
 @p name string
 @r GuildTextChannel
 @d Creates a new text channel in this guild. The name must be between 2 and 100
@@ -226,7 +208,6 @@ end
 
 --[=[
 @m createVoiceChannel
-@t http
 @p name string
 @r GuildVoiceChannel
 @d Creates a new voice channel in this guild. The name must be between 2 and 100
@@ -243,7 +224,6 @@ end
 
 --[=[
 @m createCategory
-@t http
 @p name string
 @r GuildCategoryChannel
 @d Creates a channel category in this guild. The name must be between 2 and 100
@@ -260,7 +240,6 @@ end
 
 --[=[
 @m createRole
-@t http
 @p name string
 @r Role
 @d Creates a new role in this guild. The name must be between 1 and 100 characters
@@ -277,7 +256,6 @@ end
 
 --[=[
 @m createEmoji
-@t http
 @p name string
 @p image Base64-Resolvable
 @r Emoji
@@ -296,7 +274,6 @@ end
 
 --[=[
 @m setName
-@t http
 @p name string
 @r boolean
 @d Sets the guilds name. This must be between 2 and 100 characters in length.
@@ -307,7 +284,6 @@ end
 
 --[=[
 @m setRegion
-@t http
 @p region string
 @r boolean
 @d Sets the guild's voice region (eg: `us-east`). See `listVoiceRegions` for a list
@@ -319,7 +295,6 @@ end
 
 --[=[
 @m setVerificationLevel
-@t http
 @p verification_level number
 @r boolean
 @d Sets the guild's verification level setting. See the `verificationLevel`
@@ -331,7 +306,6 @@ end
 
 --[=[
 @m setNotificationSetting
-@t http
 @p default_message_notifications number
 @r boolean
 @d Sets the guild's default notification setting. See the `notficationSetting`
@@ -343,7 +317,6 @@ end
 
 --[=[
 @m setExplicitContentSetting
-@t http
 @p explicit_content_filter number
 @r boolean
 @d Sets the guild's explicit content level setting. See the `explicitContentLevel`
@@ -355,7 +328,6 @@ end
 
 --[=[
 @m setAFKTimeout
-@t http
 @p afk_timeout number
 @r number
 @d Sets the guild's AFK timeout in seconds.
@@ -366,7 +338,6 @@ end
 
 --[=[
 @m setAFKChannel
-@t http
 @p id Channel-ID-Resolvable
 @r boolean
 @d Sets the guild's AFK channel.
@@ -378,10 +349,10 @@ end
 
 --[=[
 @m setSystemChannel
-@t http
 @p id Channel-Id-Resolvable
 @r boolean
-@d Sets the guild's join message channel.
+@d Transfers ownership of the guild to another user. Only the current guild owner
+can do this.
 ]=]
 function Guild:setSystemChannel(id)
 	id = id and Resolver.channelId(id)
@@ -390,7 +361,6 @@ end
 
 --[=[
 @m setOwner
-@t http
 @p id User-ID-Resolvable
 @r boolean
 @d Transfers ownership of the guild to another user. Only the current guild owner
@@ -403,7 +373,6 @@ end
 
 --[=[
 @m setIcon
-@t http
 @p icon Base64-Resolvable
 @r boolean
 @d Sets the guild's icon. To remove the icon, pass `nil`.
@@ -414,20 +383,7 @@ function Guild:setIcon(icon)
 end
 
 --[=[
-@m setBanner
-@t http
-@p banner Base64-Resolvable
-@r boolean
-@d Sets the guild's banner. To remove the banner, pass `nil`.
-]=]
-function Guild:setBanner(banner)
-	banner = banner and Resolver.base64(banner)
-	return self:_modify({banner = banner or json.null})
-end
-
---[=[
 @m setSplash
-@t http
 @p splash Base64-Resolvable
 @r boolean
 @d Sets the guild's splash. To remove the splash, pass `nil`.
@@ -439,7 +395,6 @@ end
 
 --[=[
 @m getPruneCount
-@t http
 @op days number
 @r number
 @d Returns the number of members that would be pruned from the guild if a prune
@@ -456,25 +411,12 @@ end
 
 --[=[
 @m pruneMembers
-@t http
 @op days number
-@op count boolean
 @r number
-@d Prunes (removes) inactive, roleless members from the guild who have not been online in the last provided days.
-If the `count` boolean is provided, the number of pruned members is returned; otherwise, `0` is returned.
+@d Prunes (removes) inactive, roleless members from the guild.
 ]=]
-function Guild:pruneMembers(days, count)
-	local t1 = type(days)
-	if t1 == 'number' then
-		count = type(count) == 'boolean' and count
-	elseif t1 == 'boolean' then
-		count = days
-		days = nil
-	end
-	local data, err = self.client._api:beginGuildPrune(self._id, nil, {
-		days = days,
-		compute_prune_count = count,
-	})
+function Guild:pruneMembers(days)
+	local data, err = self.client._api:beginGuildPrune(self._id, nil, days and {days = days} or nil)
 	if data then
 		return data.pruned
 	else
@@ -484,11 +426,11 @@ end
 
 --[=[
 @m getBans
-@t http
 @r Cache
 @d Returns a newly constructed cache of all ban objects for the guild. The
-cache and its objects are not automatically updated via gateway events. You must
-call this method again to get the updated objects.
+cache is not automatically updated via gateway events, but the internally
+referenced user objects may be updated. You must call this method again to
+guarantee that the objects are up to date.
 ]=]
 function Guild:getBans()
 	local data, err = self.client._api:getGuildBans(self._id)
@@ -501,7 +443,6 @@ end
 
 --[=[
 @m getBan
-@t http
 @p id User-ID-Resolvable
 @r Ban
 @d This will return a Ban object for a giver user if that user is banned
@@ -511,7 +452,7 @@ function Guild:getBan(id)
 	id = Resolver.userId(id)
 	local data, err = self.client._api:getGuildBan(self._id, id)
 	if data then
-		return Ban(data, self)
+		return Ban(data, self._parent)
 	else
 		return nil, err
 	end
@@ -519,7 +460,6 @@ end
 
 --[=[
 @m getInvites
-@t http
 @r Cache
 @d Returns a newly constructed cache of all invite objects for the guild. The
 cache and its objects are not automatically updated via gateway events. You must
@@ -536,15 +476,16 @@ end
 
 --[=[
 @m getAuditLogs
-@t http
 @op query table
 @r Cache
 @d Returns a newly constructed cache of audit log entry objects for the guild. The
 cache and its objects are not automatically updated via gateway events. You must
 call this method again to get the updated objects.
 
-If included, the query parameters include: query.limit: number, query.user: UserId Resolvable
-query.before: EntryId Resolvable, query.type: ActionType Resolvable
+- query.limit: number
+- query.user: UserId Resolvable
+- query.before: EntryId Resolvable
+- query.type: ActionType Resolvable
 ]=]
 function Guild:getAuditLogs(query)
 	if type(query) == 'table' then
@@ -567,7 +508,6 @@ end
 
 --[=[
 @m getWebhooks
-@t http
 @r Cache
 @d Returns a newly constructed cache of all webhook objects for the guild. The
 cache and its objects are not automatically updated via gateway events. You must
@@ -584,7 +524,6 @@ end
 
 --[=[
 @m listVoiceRegions
-@t http
 @r table
 @d Returns a raw data table that contains a list of available voice regions for
 this guild, as provided by Discord, with no additional parsing.
@@ -595,7 +534,6 @@ end
 
 --[=[
 @m leave
-@t http
 @r boolean
 @d Removes the current user from the guild.
 ]=]
@@ -610,9 +548,8 @@ end
 
 --[=[
 @m delete
-@t http
 @r boolean
-@d Permanently deletes the guild. The current user must owner the server. This cannot be undone!
+@d Permanently deletes the guild. This cannot be undone!
 ]=]
 function Guild:delete()
 	local data, err = self.client._api:deleteGuild(self._id)
@@ -629,7 +566,6 @@ end
 
 --[=[
 @m kickUser
-@t http
 @p id User-ID-Resolvable
 @op reason string
 @r boolean
@@ -648,7 +584,6 @@ end
 
 --[=[
 @m banUser
-@t http
 @p id User-ID-Resolvable
 @op reason string
 @op days number
@@ -673,7 +608,6 @@ end
 
 --[=[
 @m unbanUser
-@t http
 @p id User-ID-Resolvable
 @op reason string
 @r boolean
@@ -722,22 +656,11 @@ end
 Only partnered guilds may have this.]=]
 function get.splashURL(self)
 	local splash = self._splash
-	return splash and format('https://cdn.discordapp.com/splashes/%s/%s.png', self._id, splash)
-end
-
---[=[@p banner string/nil The hash for the guild's custom banner, if one is set.]=]
-function get.banner(self)
-	return self._banner
-end
-
---[=[@p bannerURL string/nil The URL that can be used to view the guild's banner, if one is set.]=]
-function get.bannerURL(self)
-	local banner = self._banner
-	return banner and format('https://cdn.discordapp.com/banners/%s/%s.png', self._id, banner)
+	return splash and format('https://cdn.discordapp.com/splashs/%s/%s.png', self._id, splash)
 end
 
 --[=[@p large boolean Whether the guild has an arbitrarily large amount of members. Guilds that are
-"large" will not initialize with all members cached.]=]
+"large" will not initialize with all members.]=]
 function get.large(self)
 	return self._large
 end
@@ -750,26 +673,6 @@ end
 --[=[@p region string The voice region that is used for all voice connections in the guild.]=]
 function get.region(self)
 	return self._region
-end
-
---[=[@p vanityCode string/nil The guild's vanity invite URL code, if one exists.]=]
-function get.vanityCode(self)
-	return self._vanity_url_code
-end
-
---[=[@p description string/nil The guild's custom description, if one exists.]=]
-function get.description(self)
-	return self._description
-end
-
---[=[@p maxMembers number/nil The guild's maximum member count, if available.]=]
-function get.maxMembers(self)
-	return self._max_members
-end
-
---[=[@p maxPresences number/nil The guild's maximum presence count, if available.]=]
-function get.maxPresences(self)
-	return self._max_presences
 end
 
 --[=[@p mfaLevel number The guild's multi-factor (or two-factor) verification level setting. A value of
@@ -820,18 +723,6 @@ function get.explicitContentSetting(self)
 	return self._explicit_content_filter
 end
 
---[=[@p premiumTier number The guild's premier tier affected by nitro server
-boosts. See the `premiumTier` enumeration for a human-readable representation]=]
-function get.premiumTier(self)
-	return self._premium_tier
-end
-
---[=[@p premiumSubscriptionCount number The number of users that have upgraded
-the guild with nitro server boosting.]=]
-function get.premiumSubscriptionCount(self)
-	return self._premium_subscription_count
-end
-
 --[=[@p features table Raw table of VIP features that are enabled for the guild.]=]
 function get.features(self)
 	return self._features
@@ -862,12 +753,12 @@ function get.afkChannel(self)
 	return self._voice_channels:get(self._afk_channel_id)
 end
 
---[=[@p systemChannelId string/nil The channel id where Discord's join messages will be displayed.]=]
+--[=[@p systemChannelId string/nil The channel id where Discord's join messages will be displayed]=]
 function get.systemChannelId(self)
 	return self._system_channel_id
 end
 
---[=[@p systemChannel GuildTextChannel/nil The channel where Discord's join messages will be displayed.]=]
+--[=[@p systemChannel GuildTextChannel/nil The channel where Discord's join messages will be displayed]=]
 function get.systemChannel(self)
 	return self._text_channels:get(self._system_channel_id)
 end

@@ -19,7 +19,6 @@ end
 
 --[=[
 @m getAvatarURL
-@t mem
 @op size number
 @op ext string
 @r string
@@ -43,7 +42,6 @@ end
 
 --[=[
 @m getDefaultAvatarURL
-@t mem
 @op size number
 @r string
 @d Returns a URL that can be used to view the user's default avatar.
@@ -59,7 +57,6 @@ end
 
 --[=[
 @m getPrivateChannel
-@t http
 @r PrivateChannel
 @d Returns a private channel that can be used to communicate with the user. If the
 channel is not cached an HTTP request is made to open one.
@@ -82,7 +79,6 @@ end
 
 --[=[
 @m send
-@t http
 @p content string/table
 @r Message
 @d Equivalent to `User:getPrivateChannel():send(content)`
@@ -98,7 +94,6 @@ end
 
 --[=[
 @m sendf
-@t http
 @p content string
 @r Message
 @d Equivalent to `User:getPrivateChannel():sendf(content)`

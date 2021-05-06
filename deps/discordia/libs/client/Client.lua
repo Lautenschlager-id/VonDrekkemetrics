@@ -1,9 +1,8 @@
 --[=[
-@c Client x Emitter
-@t ui
+@ic Client x Emitter
 @op options table
 @d The main point of entry into a Discordia application. All data relevant to
-Discord is accessible through a client instance or its child objects after a
+Discord are accessible through a client instance or its child objects after a
 connection to Discord is established with the `run` method. In other words,
 client data should not be expected and most client methods should not be called
 until after the `ready` event is received. Base emitter methods may be called
@@ -53,7 +52,7 @@ local GATEWAY_VERSION = constants.GATEWAY_VERSION
 -- do not change these options here
 -- pass a custom table on client initialization instead
 local defaultOptions = {
-	routeDelay = 250,
+	routeDelay = 300,
 	maxRetries = 5,
 	shardCount = 0,
 	firstShard = 0,
@@ -65,7 +64,6 @@ local defaultOptions = {
 	bitrate = 64000,
 	logFile = 'discordia.log',
 	logLevel = logLevel.info,
-	gatewayFile = 'gateway.json',
 	dateTime = '%F %T',
 	syncGuilds = false,
 }
@@ -161,7 +159,7 @@ local function run(self, token)
 	local now = time()
 	local url, count, owner
 
-	local cache = readFileSync(options.gatewayFile)
+	local cache = readFileSync('gateway.json')
 	cache = cache and decode(cache)
 
 	if cache then
@@ -217,7 +215,7 @@ local function run(self, token)
 
 		cache.url = url
 
-		writeFileSync(options.gatewayFile, encode(cache))
+		writeFileSync('gateway.json', encode(cache))
 
 	end
 
@@ -275,9 +273,7 @@ end
 shards as are required or requested. By using coroutines that are automatically
 managed by Luvit libraries and a libuv event loop, multiple clients per process
 and multiple shards per client can operate concurrently. This should be the last
-method called after all other code and event handlers have been initialized. If
-a presence table is provided, it will act as if the user called `setStatus`
-and `setGame` after `run`.
+method called after all other code and event handlers have been initialized.
 ]=]
 function Client:run(token, presence)
 	self._presence = presence or {}
@@ -286,7 +282,6 @@ end
 
 --[=[
 @m stop
-@t ws
 @r nil
 @d Disconnects all shards and effectively stop their loops. This does not
 empty any data that the client may have cached.
@@ -310,7 +305,6 @@ end
 
 --[=[
 @m setUsername
-@t http
 @p username string
 @r boolean
 @d Sets the client's username. This must be between 2 and 32 characters in
@@ -322,7 +316,6 @@ end
 
 --[=[
 @m setAvatar
-@t http
 @p avatar Base64-Resolveable
 @r boolean
 @d Sets the client's avatar. To remove the avatar, pass an empty string or nil.
@@ -335,7 +328,6 @@ end
 
 --[=[
 @m createGuild
-@t http
 @p name string
 @r boolean
 @d Creates a new guild. The name must be between 2 and 100 characters in length.
@@ -354,7 +346,6 @@ end
 
 --[=[
 @m createGroupChannel
-@t http
 @r GroupChannel
 @d Creates a new group channel. This method is only available for user accounts.
 ]=]
@@ -369,7 +360,6 @@ end
 
 --[=[
 @m getWebhook
-@t http
 @p id string
 @r Webhook
 @d Gets a webhook object by ID. This always makes an HTTP request to obtain a
@@ -386,7 +376,6 @@ end
 
 --[=[
 @m getInvite
-@t http
 @p code string
 @op counts boolean
 @r Invite
@@ -404,7 +393,6 @@ end
 
 --[=[
 @m getUser
-@t http?
 @p id User-ID-Resolvable
 @r User
 @d Gets a user object by ID. If the object is already cached, then the cached
@@ -429,7 +417,6 @@ end
 
 --[=[
 @m getGuild
-@t mem
 @p id Guild-ID-Resolvable
 @r Guild
 @d Gets a guild object by ID. The current user must be in the guild and the client
@@ -443,7 +430,6 @@ end
 
 --[=[
 @m getChannel
-@t mem
 @p id Channel-ID-Resolvable
 @r Channel
 @d Gets a channel object by ID. For guild channels, the current user must be in
@@ -465,7 +451,6 @@ end
 
 --[=[
 @m getRole
-@t mem
 @p id Role-ID-Resolvable
 @r Role
 @d Gets a role object by ID. The current user must be in the role's guild and
@@ -479,7 +464,6 @@ end
 
 --[=[
 @m getEmoji
-@t mem
 @p id Emoji-ID-Resolvable
 @r Emoji
 @d Gets an emoji object by ID. The current user must be in the emoji's guild and
@@ -493,10 +477,9 @@ end
 
 --[=[
 @m listVoiceRegions
-@t http
 @r table
 @d Returns a raw data table that contains a list of voice regions as provided by
-Discord, with no formatting beyond what is provided by the Discord API.
+Discord, with no additional parsing.
 ]=]
 function Client:listVoiceRegions()
 	return self._api:listVoiceRegions()
@@ -504,25 +487,12 @@ end
 
 --[=[
 @m getConnections
-@t http
 @r table
 @d Returns a raw data table that contains a list of connections as provided by
-Discord, with no formatting beyond what is provided by the Discord API.
-This is unrelated to voice connections.
+Discord, with no additional parsing. This is unrelated to voice connections.
 ]=]
 function Client:getConnections()
 	return self._api:getUsersConnections()
-end
-
---[=[
-@m getApplicationInformation
-@t http
-@r table
-@d Returns a raw data table that contains information about the current OAuth2
-application, with no formatting beyond what is provided by the Discord API.
-]=]
-function Client:getApplicationInformation()
-	return self._api:getCurrentApplicationInformation()
 end
 
 local function updateStatus(self)
@@ -538,7 +508,6 @@ end
 
 --[=[
 @m setStatus
-@t ws
 @p status string
 @r nil
 @d Sets the current users's status on all shards that are managed by this client.
@@ -561,12 +530,11 @@ end
 
 --[=[
 @m setGame
-@t ws
 @p game string/table
 @r nil
 @d Sets the current users's game on all shards that are managed by this client.
 If a string is passed, it is treated as the game name. If a table is passed, it
-must have a `name` field and may optionally have a `url` or `type` field. Pass `nil` to
+must have a `name` field and may optionally have a `url` field. Pass `nil` to
 remove the game status.
 ]=]
 function Client:setGame(game)
@@ -593,7 +561,6 @@ end
 
 --[=[
 @m setAFK
-@t ws
 @p afk boolean
 @r nil
 @d Set the current user's AFK status on all shards that are managed by this client.
@@ -634,7 +601,7 @@ function get.verified(self)
 end
 
 --[=[@p mfaEnabled boolean/nil Whether the current user's owner's account has multi-factor (or two-factor)
-authentication enabled. This is equivalent to `verified`]=]
+authentication enabled.]=]
 function get.mfaEnabled(self)
 	return self._user and self._user._verified
 end

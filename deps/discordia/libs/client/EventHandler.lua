@@ -2,7 +2,7 @@ local enums = require('enums')
 local json = require('json')
 
 local channelType = enums.channelType
-local insert = table.insert
+local concat, insert = table.concat, table.insert
 local null = json.null
 
 local function warning(client, object, id, event)
@@ -42,7 +42,7 @@ end})
 
 function EventHandler.READY(d, client, shard)
 
-	shard:info('Received READY')
+	shard:info('Received READY (%s)', concat(d._trace, ', '))
 	shard:emit('READY')
 
 	shard._session_id = d.session_id
@@ -97,8 +97,8 @@ function EventHandler.READY(d, client, shard)
 
 end
 
-function EventHandler.RESUMED(_, client, shard)
-	shard:info('Received RESUMED')
+function EventHandler.RESUMED(d, client, shard)
+	shard:info('Received RESUMED (%s)', concat(d._trace, ', '))
 	return client:emit('shardResumed', shard._id)
 end
 
@@ -126,7 +126,7 @@ end
 function EventHandler.CHANNEL_CREATE(d, client)
 	local channel
 	local t = d.type
-	if t == channelType.text or t == channelType.news then
+	if t == channelType.text then
 		local guild = client._guilds:get(d.guild_id)
 		if not guild then return warning(client, 'Guild', d.guild_id, 'CHANNEL_CREATE') end
 		channel = guild._text_channels:_insert(d)
@@ -151,7 +151,7 @@ end
 function EventHandler.CHANNEL_UPDATE(d, client)
 	local channel
 	local t = d.type
-	if t == channelType.text or t == channelType.news then
+	if t == channelType.text then
 		local guild = client._guilds:get(d.guild_id)
 		if not guild then return warning(client, 'Guild', d.guild_id, 'CHANNEL_UPDATE') end
 		channel = guild._text_channels:_insert(d)
@@ -176,7 +176,7 @@ end
 function EventHandler.CHANNEL_DELETE(d, client)
 	local channel
 	local t = d.type
-	if t == channelType.text or t == channelType.news then
+	if t == channelType.text then
 		local guild = client._guilds:get(d.guild_id)
 		if not guild then return warning(client, 'Guild', d.guild_id, 'CHANNEL_DELETE') end
 		channel = guild._text_channels:_remove(d)

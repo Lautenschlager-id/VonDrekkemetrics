@@ -27,7 +27,6 @@ end
 
 --[=[
 @m createWebhook
-@t http
 @p name string
 @r Webhook
 @d Creates a webhook for this channel. The name must be between 2 and 32 characters
@@ -44,7 +43,6 @@ end
 
 --[=[
 @m getWebhooks
-@t http
 @r Cache
 @d Returns a newly constructed cache of all webhook objects for the channel. The
 cache and its objects are not automatically updated via gateway events. You must
@@ -61,11 +59,9 @@ end
 
 --[=[
 @m bulkDelete
-@t http
 @p messages Message-ID-Resolvables
 @r boolean
-@d Bulk deletes multiple messages, from 2 to 100, from the channel. Messages over
-2 weeks old cannot be deleted and will return an error.
+@d Bulk deletes multiple messages, from 2 to 100, from the channel.
 ]=]
 function GuildTextChannel:bulkDelete(messages)
 	messages = Resolver.messageIds(messages)
@@ -84,7 +80,6 @@ end
 
 --[=[
 @m setTopic
-@t http
 @p topic string
 @r boolean
 @d Sets the channel's topic. This must be between 1 and 1024 characters. Pass `nil`
@@ -96,7 +91,6 @@ end
 
 --[=[
 @m setRateLimit
-@t http
 @p limit number
 @r boolean
 @d Sets the channel's slowmode rate limit in seconds. This must be between 0 and 120.
@@ -108,7 +102,6 @@ end
 
 --[=[
 @m enableNSFW
-@t http
 @r boolean
 @d Enables the NSFW setting for the channel. NSFW channels are hidden from users
 until the user explicitly requests to view them.
@@ -119,7 +112,6 @@ end
 
 --[=[
 @m disableNSFW
-@t http
 @r boolean
 @d Disables the NSFW setting for the channel. NSFW channels are hidden from users
 until the user explicitly requests to view them.
@@ -141,11 +133,6 @@ end
 --[=[@p rateLimit number Slowmode rate limit per guild member.]=]
 function get.rateLimit(self)
 	return self._rate_limit_per_user or 0
-end
-
---[=[@p isNews boolean Whether this channel is a news channel of type 5.]=]
-function get.isNews(self)
-	return self._type == 5
 end
 
 --[=[@p members FilteredIterable A filtered iterable of guild members that have

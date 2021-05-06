@@ -1,9 +1,8 @@
 --[=[
 @c Container
-@t abc
-@d Defines the base methods and properties for all Discord objects and
-structures. Container classes are constructed internally with information
-received from Discord and should never be manually constructed.
+@d Abstract base class that defines the base methods and/or properties for all
+Discord objects and structures. Container classes are constructed internally
+with information received from Discord and should never be manually constructed.
 ]=]
 
 local json = require('json')

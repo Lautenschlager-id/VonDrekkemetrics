@@ -47,7 +47,6 @@ end
 
 --[=[
 @m setName
-@t http
 @p name string
 @r boolean
 @d Sets the emoji's name. The name must be between 2 and 32 characters in length.
@@ -58,7 +57,6 @@ end
 
 --[=[
 @m setRoles
-@t http
 @p roles Role-ID-Resolvables
 @r boolean
 @d Sets the roles that can use the emoji.
@@ -70,7 +68,6 @@ end
 
 --[=[
 @m delete
-@t http
 @r boolean
 @d Permanently deletes the emoji. This cannot be undone!
 ]=]
@@ -89,7 +86,6 @@ end
 
 --[=[
 @m hasRole
-@t mem
 @p id Role-ID-Resolvable
 @r boolean
 @d Returns whether or not the provided role is allowed to use the emoji.
@@ -140,20 +136,19 @@ function get.requireColons(self)
 	return self._require_colons
 end
 
---[=[@p hash string String with the format `name:id`, used in HTTP requests.
-This is different from `Emoji:__hash`, which returns only the Snowflake ID.
+--[=[@p hash string An iterable array of roles that may be required to use this emoji, generally
+related to integration-managed emojis. Object order is not guaranteed.
 ]=]
 function get.hash(self)
 	return self._name .. ':' .. self._id
 end
 
---[=[@p animated boolean Whether this emoji is animated.]=]
+--[=[@p animated boolean Whether this emoji is animated. (a .gif)]=]
 function get.animated(self)
 	return self._animated
 end
 
---[=[@p roles ArrayIterable An iterable array of roles that may be required to use this emoji, generally
-related to integration-managed emojis. Object order is not guaranteed.]=]
+--[=[@p roles ArrayIterable An iterable of roles that have access to the emoji.]=]
 function get.roles(self)
 	if not self._roles then
 		local roles = self._parent._roles

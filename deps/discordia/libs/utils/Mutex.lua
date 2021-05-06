@@ -1,7 +1,5 @@
 --[=[
-@c Mutex
-@t ui
-@mt mem
+@ic Mutex
 @d Mutual exclusion class used to control Lua coroutine execution order.
 ]=]
 

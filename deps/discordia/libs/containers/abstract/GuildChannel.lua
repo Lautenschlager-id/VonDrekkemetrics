@@ -1,7 +1,7 @@
 --[=[
 @c GuildChannel x Channel
-@t abc
-@d Defines the base methods and properties for all Discord guild channels.
+@d Abstract base class that defines the base methods and/or properties for all
+Discord guild channels.
 ]=]
 
 local json = require('json')
@@ -41,7 +41,6 @@ end
 
 --[=[
 @m setName
-@t http
 @p name string
 @r boolean
 @d Sets the channel's name. This must be between 2 and 100 characters in length.
@@ -52,7 +51,6 @@ end
 
 --[=[
 @m setCategory
-@t http
 @p id Channel-ID-Resolvable
 @r boolean
 @d Sets the channel's parent category.
@@ -74,7 +72,7 @@ local function getSortedChannels(self)
 
 	local channels
 	local t = self._type
-	if t == channelType.text or t == channelType.news then
+	if t == channelType.text then
 		channels = self._parent._text_channels
 	elseif t == channelType.voice then
 		channels = self._parent._voice_channels
@@ -103,7 +101,6 @@ end
 
 --[=[
 @m moveUp
-@t http
 @p n number
 @r boolean
 @d Moves a channel up its list. The parameter `n` indicates how many spaces the
@@ -138,7 +135,6 @@ end
 
 --[=[
 @m moveDown
-@t http
 @p n number
 @r boolean
 @d Moves a channel down its list. The parameter `n` indicates how many spaces the
@@ -173,14 +169,13 @@ end
 
 --[=[
 @m createInvite
-@t http
-@op payload table
+@p payload table
 @r Invite
-@d Creates an invite to the channel. Optional payload fields are: max_age: number
-time in seconds until expiration, default = 86400 (24 hours), max_uses: number
-total number of uses allowed, default = 0 (unlimited), temporary: boolean whether
-the invite grants temporary membership, default = false, unique: boolean whether
-a unique code should be guaranteed, default = false
+@d Creates an invite to the channel. Optional payload fields are:
+- max_age:number time in seconds until expiration, default = 86400 (24 hours)
+- max_uses:number total number of uses allowed, default = 0 (unlimited)
+- temporary:boolean whether the invite grants temporary membership, default = false
+- unique:boolean whether a unique code should be guaranteed, default = false
 ]=]
 function GuildChannel:createInvite(payload)
 	local data, err = self.client._api:createChannelInvite(self._id, payload)
@@ -193,7 +188,6 @@ end
 
 --[=[
 @m getInvites
-@t http
 @r Cache
 @d Returns a newly constructed cache of all invite objects for the channel. The
 cache and its objects are not automatically updated via gateway events. You must
@@ -210,7 +204,6 @@ end
 
 --[=[
 @m getPermissionOverwriteFor
-@t mem
 @p obj Role/Member
 @r PermissionOverwrite
 @d Returns a permission overwrite object corresponding to the provided member or
@@ -236,7 +229,6 @@ end
 
 --[=[
 @m delete
-@t http
 @r boolean
 @d Permanently deletes the channel. This cannot be undone!
 ]=]
@@ -268,14 +260,6 @@ end
 --[=[@p category GuildCategoryChannel/nil The parent channel category that may contain this channel.]=]
 function get.category(self)
 	return self._parent._categories:get(self._parent_id)
-end
-
---[=[@p private boolean Whether the "everyone" role has permission to view this
-channel. In the Discord channel, private text channels are indicated with a lock
-icon and private voice channels are not visible.]=]
-function get.private(self)
-	local overwrite = self._permission_overwrites:get(self._parent._id)
-	return overwrite and overwrite:getDeniedPermissions():has('readMessages')
 end
 
 return GuildChannel

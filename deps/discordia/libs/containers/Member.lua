@@ -2,8 +2,7 @@
 @c Member x UserPresence
 @d Represents a Discord guild member. Though one user may be a member in more than
 one guild, each presence is represented by a different member object associated
-with that guild. Note that any method or property that exists for the User class is
-also available in the Member class.
+with that guild.
 ]=]
 
 local enums = require('enums')
@@ -57,7 +56,6 @@ end
 
 --[=[
 @m getColor
-@t mem
 @r Color
 @d Returns a color object that represents the member's color as determined by
 its highest colored role. If the member has no colored roles, then the default
@@ -72,13 +70,12 @@ function Member:getColor()
 	return roles[1] and roles[1]:getColor() or Color()
 end
 
-local function has(a, b)
-	return band(a, b) > 0
+local function has(a, b, admin)
+	return band(a, b) > 0 or admin and band(a, permission.administrator) > 0
 end
 
 --[=[
 @m hasPermission
-@t mem
 @op channel GuildChannel
 @p perm Permissions-Resolvable
 @r boolean
@@ -107,18 +104,6 @@ function Member:hasPermission(channel, perm)
 	end
 
 	if self.id == guild.ownerId then
-		return true
-	end
-
-	local rolePermissions = guild.defaultRole.permissions
-
-	for role in self.roles:iter() do
-		if role.id ~= guild.id then -- just in case
-			rolePermissions = bor(rolePermissions, role.permissions)
-		end
-	end
-
-	if has(rolePermissions, permission.administrator) then
 		return true
 	end
 
@@ -166,13 +151,24 @@ function Member:hasPermission(channel, perm)
 
 	end
 
-	return has(rolePermissions, n)
+	for role in self.roles:iter() do
+		if role.id ~= guild.id then -- just in case
+			if has(role.permissions, n, true) then
+				return true
+			end
+		end
+	end
+
+	if has(guild.defaultRole.permissions, n, true) then
+		return true
+	end
+
+	return false
 
 end
 
 --[=[
 @m getPermissions
-@t mem
 @op channel GuildChannel
 @r Permissions
 @d Returns a permissions object that represents the member's total permissions for
@@ -241,7 +237,6 @@ end
 
 --[=[
 @m addRole
-@t http?
 @p id Role-ID-Resolvable
 @r boolean
 @d Adds a role to the member. If the member already has the role, then no action is
@@ -266,7 +261,6 @@ end
 
 --[=[
 @m removeRole
-@t http?
 @p id Role-ID-Resolvable
 @r boolean
 @d Removes a role from the member. If the member does not have the role, then no
@@ -301,7 +295,6 @@ end
 
 --[=[
 @m hasRole
-@t mem
 @p id Role-ID-Resolvable
 @r boolean
 @d Checks whether the member has a specific role. This will return true for the
@@ -323,7 +316,6 @@ end
 
 --[=[
 @m setNickname
-@t http
 @p nick string
 @r boolean
 @d Sets the member's nickname. This must be between 1 and 32 characters in length.
@@ -347,7 +339,6 @@ end
 
 --[=[
 @m setVoiceChannel
-@t http
 @p id Channel-ID-Resolvable
 @r boolean
 @d Moves the member to a new voice channel, but only if the member has an active
@@ -367,7 +358,6 @@ end
 
 --[=[
 @m mute
-@t http
 @r boolean
 @d Mutes the member in its guild.
 ]=]
@@ -383,7 +373,6 @@ end
 
 --[=[
 @m unmute
-@t http
 @r boolean
 @d Unmutes the member in its guild.
 ]=]
@@ -399,7 +388,6 @@ end
 
 --[=[
 @m deafen
-@t http
 @r boolean
 @d Deafens the member in its guild.
 ]=]
@@ -415,7 +403,6 @@ end
 
 --[=[
 @m undeafen
-@t http
 @r boolean
 @d Undeafens the member in its guild.
 ]=]
@@ -431,7 +418,6 @@ end
 
 --[=[
 @m kick
-@t http
 @p reason string
 @r boolean
 @d Equivalent to `Member.guild:kickUser(Member.user, reason)`
@@ -442,7 +428,6 @@ end
 
 --[=[
 @m ban
-@t http
 @p reason string
 @p days number
 @r boolean
@@ -454,7 +439,6 @@ end
 
 --[=[
 @m unban
-@t http
 @p reason string
 @r boolean
 @d Equivalent to `Member.guild:unbanUser(Member.user, reason)`
@@ -492,12 +476,6 @@ an ISO 8601 string plus microseconds when available. Member objects generated
 via presence updates lack this property.]=]
 function get.joinedAt(self)
 	return self._joined_at
-end
-
---[=[@p premiumSince string/nil The date and time at which the current member boosted the guild, represented as
-an ISO 8601 string plus microseconds when available.]=]
-function get.premiumSince(self)
-	return self._premium_since
 end
 
 --[=[@p voiceChannel GuildVoiceChannel/nil The voice channel to which this member is connected in the current guild.]=]
