@@ -32,7 +32,8 @@ local commands = {
 	["modo"] = true,
 	["senti"] = true,
 	["reboot"] = true,
-	["ocr"] = true
+	["ocr"] = true,
+	["open"] = true
 }
 
 --[[
