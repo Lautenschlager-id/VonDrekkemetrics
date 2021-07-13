@@ -42,7 +42,8 @@ end
 
 return {
 	channel = {
-		[discordChannels["br-senti"].id] = true
+		[discordChannels["br-senti"].id] = true,
+		[discordChannels["br-modsents"].id] = true
 	},
 
 	syntax = "open",

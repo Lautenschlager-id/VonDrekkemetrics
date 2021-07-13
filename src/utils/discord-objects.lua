@@ -17,6 +17,7 @@ local channels = {
 	-- Br Staff
 	["br-utils"] = "826082697185198140", -- #bot-utils
 	["br-senti"] = "421763072722599967", -- #sentinelas
+	["br-modsents"] = "727175201552466010", -- #modsents
 
 	-- Debug
 	["debug"] = "818016844522586123", -- #von-drekkemetrics
