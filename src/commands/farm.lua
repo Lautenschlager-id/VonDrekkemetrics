@@ -45,7 +45,7 @@ return {
 		local messages, msgIndex = { }, 0
 		for msg = 1, mainIndex do
 			msgIndex = msgIndex + 1
-			messages[msgIndex] = message:reply(banCommand .. table_concat(names[msg], ','))
+			messages[msgIndex] = message:reply(table_concat(names[msg], ','))
 		end
 
 		temporaryObject[message.id] = messages
