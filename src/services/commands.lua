@@ -33,7 +33,8 @@ local commands = {
 	["senti"] = true,
 	["reboot"] = true,
 	["ocr"] = true,
-	["open"] = true
+	["open"] = true,
+	["farm"] = true
 }
 
 --[[
