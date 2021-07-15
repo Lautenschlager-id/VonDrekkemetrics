@@ -15,7 +15,8 @@ local messageLength = 255 - #banCommand + 1
 
 return {
 	channel = {
-		[discordChannels["br-mod-utils"].id] = true
+		[discordChannels["br-mod-utils"].id] = true,
+		[discordChannels["int-mod-utils"].id] = true
 	},
 
 	syntax = "farm `text`",
