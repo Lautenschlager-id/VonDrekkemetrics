@@ -5,6 +5,7 @@ local temporaryObject = require("../utils/temporaryObject")
 local discordChannels = require("../utils/discord-objects").channels
 
 local str_gmatch = string.gmatch
+local str_sub = string.sub
 
 local table_concat = table.concat
 
@@ -23,12 +24,17 @@ return {
 	execute = function(self, message, parameters)
 		if not parameters then return end
 
+		local split = ','
+		if str_sub(parameters, 1, 4) == "noob" then
+			split = ' '
+		end
+
 		local names, index = { }, 0
 		for name in str_gmatch(parameters, "(%S+#%d%d%d%d) / #") do
 			index = index + 1
 			names[index] = name
 		end
 
-		temporaryObject[message.id] = message:reply(table_concat(names, ','))
+		temporaryObject[message.id] = message:reply(table_concat(names, split))
 	end
 }
