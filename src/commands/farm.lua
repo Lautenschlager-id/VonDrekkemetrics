@@ -30,7 +30,7 @@ return {
 		end
 
 		local names, index = { }, 0
-		for name in str_gmatch(parameters, "(%S+#%d%d%d%d) / #") do
+		for name in str_gmatch(parameters, "(%S+) / #") do
 			index = index + 1
 			names[index] = name
 		end
