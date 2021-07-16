@@ -4,6 +4,8 @@ local temporaryObject = require("../utils/temporaryObject")
 
 local discordChannels = require("../utils/discord-objects").channels
 
+local next = next
+
 local str_gmatch = string.gmatch
 local str_sub = string.sub
 
@@ -29,12 +31,32 @@ return {
 			split = ' '
 		end
 
-		local names, index = { }, 0
-		for name in str_gmatch(parameters, "(%S+) / #") do
-			index = index + 1
-			names[index] = name
+		local registeredAccounts, sourisAccounts, IPs = { }, { }, { }
+		local regIndex, souIndex = 0, 0
+
+		for name, isSouris, ip in str_gmatch(parameters, "((%*?)%S+) / (#%S+)") do
+			if isSouris ~= '' then
+				souIndex = souIndex + 1
+				sourisAccounts[souIndex] = name
+			else
+				regIndex = regIndex + 1
+				registeredAccounts[regIndex] = name
+			end
+
+			IPs[ip] = true
 		end
 
-		temporaryObject[message.id] = message:reply("``" .. table_concat(names, split) .. "``")
+		local ipArr, ipIndex = { }, 0
+		for ip in next, IPs do
+			ipIndex = ipIndex + 1
+			ipArr[ipIndex] = ip
+		end
+
+		local messages = { registeredAccounts, sourisAccounts, IPs }
+		for m, tbl in next, messages do
+			messages[m] = message:reply("``" .. table_concat(tbl, split) .. "``")
+		end
+
+		temporaryObject[message.id] = messages
 	end
 }
