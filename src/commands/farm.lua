@@ -52,9 +52,12 @@ return {
 			ipArr[ipIndex] = ip
 		end
 
-		local messages = { registeredAccounts, sourisAccounts, IPs }
-		for m, tbl in next, messages do
-			messages[m] = message:reply("``" .. table_concat(tbl, split) .. "``")
+		local data, messages, index = { registeredAccounts, sourisAccounts, ipArr }, { }, 0
+		for _, tbl in next, data do
+			if #tbl > 0 then
+				index = index + 1
+				messages[index] = message:reply("``" .. table_concat(tbl, split) .. "``")
+			end
 		end
 
 		temporaryObject[message.id] = messages
