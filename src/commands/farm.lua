@@ -35,6 +35,6 @@ return {
 			names[index] = name
 		end
 
-		temporaryObject[message.id] = message:reply(table_concat(names, split))
+		temporaryObject[message.id] = message:reply("``" .. table_concat(names, split) .. "``")
 	end
 }
