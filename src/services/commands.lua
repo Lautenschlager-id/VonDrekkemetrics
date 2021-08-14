@@ -34,7 +34,8 @@ local commands = {
 	["reboot"] = true,
 	["ocr"] = true,
 	["open"] = true,
-	["farm"] = true
+	["farm"] = true,
+	["collate"] = true,
 }
 
 --[[

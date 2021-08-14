@@ -14,6 +14,7 @@ local channels = {
 	["int-breach"] = "814497990948814918", -- #data-breaches
 	["int-sent-only"] = "835519281427906611", -- #senti-only
 	["int-mod-utils"] = "865271568984440853", -- #mod-utils
+	["int-bad-names"] = "872921934818594826", -- #bad-names
 
 	-- Br Staff
 	["br-utils"] = "826082697185198140", -- #bot-utils

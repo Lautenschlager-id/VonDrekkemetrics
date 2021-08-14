@@ -6,4 +6,6 @@ return {
 	thumbsdown = "👎",
 	locked = "🔒",
 	unlocked = "🔓",
+	question = "❓",
+	checkpoint = "🏁",
 }

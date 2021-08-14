@@ -25,12 +25,14 @@ end))
 -- Retrieve channels objects
 require("./utils/discord-objects")
 
+-- Get discord objects
+require("./utils/guild-roles")
+
 -- Alert about data breaches
 require("./services/breach-alert")
 
--- Get discord objects
-require("./utils/discord-objects")
-require("./utils/guild-roles")
+-- Listen to #bad-names entries
+require("./services/bad-name-validator")
 
 -- Commands
 require("./services/commands")
