@@ -264,12 +264,17 @@ discord:on("messageCreate", protect(function(message)
 		or ( (hasValid and not hasInvalid) and reactions.idle )
 	)
 
-	if hasUnknown or hasInvalid then
-		message.member:send("Noob, don't spam the <#" .. badNameChannel.id .. "> channel! \z
-			Your message doesn't meet the correct format!!!\n\n\z
-			Read \z
-			https://discord.com/channels/162499575939203072/872921934818594826/872924983502987304 \z
-			for instructions.")
+	if hasUnknown then
+		message.member:send("Hello! Please only use the <#" .. badNameChannel.id .. "> channel to \z
+			post names that need changing. If you have any questions or want to discuss something\z
+			, you can use #all-discussions (or any other channel that fits). Thank you!")
+	elseif hasInvalid then
+		message.member:send("Hello! Something went wrong with the message you sent in \z
+			<#" .. badNameChannel.id .. ">. \z
+			Please check the instructions and edit your message accordingly. If you need help, \z
+			you can ask in <#828236896719208468>.\n\z
+			You can find the instructions here: \z
+			https://discord.com/channels/162499575939203072/872921934818594826/872924960983748698")
 	end
 end))
 
