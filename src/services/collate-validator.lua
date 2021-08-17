@@ -57,7 +57,7 @@ local dataTypes = {
 local dataArgumentPattern = {
 	[dataTypes.nickname] = "^(%S+)%s+(%S+)$",
 	[dataTypes.tribename] = "^\"(.-)\"%s+\"(.-)\"$",
-	[dataTypes.compromised] = "^(%S+)%s+.+$"
+	[dataTypes.compromised] = "^(%S+)$"
 }
 
 local dataValidationPattern = {
@@ -143,14 +143,13 @@ local identifyCompromisedAccountEntryType = function(entry)
 	-- For each entry
 	local target = dataTypes.compromised
 
-	local parameters = str_match(entry, dataArgumentPattern[target])
-	if not parameters then
+	if not str_find(entry, dataArgumentPattern[target]) then
 		return dataTypes.unknown
 	end
 
-	local isValid, invalidCode = dataValidationPattern[dataTypes.nickname](parameters)
+	local isValid, invalidCode = dataValidationPattern[dataTypes.nickname](entry)
 	if not isValid then
-		p(str_format("[DEBUG] Compromised account: %q %q", parameters, invalidCode))
+		p(str_format("[DEBUG] Compromised account: %q %q", entry, invalidCode))
 		return target, true
 	end
 
