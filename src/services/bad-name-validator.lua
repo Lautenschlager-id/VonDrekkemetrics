@@ -85,19 +85,13 @@ do
 			return false, 4
 		end
 
-		local lastChar = str_sub(name, -1)
-
-		if lastChar == '_' then -- Cannot end with a _
+		if str_sub(name, -1) == '_' then -- Cannot end with a _
 			return false, 5
-		end
-
-		if tonumber(lastChar) then -- Cannot end with a number
-			return false, 6
 		end
 
 		local firstLetter = (firstCharacter == '+' and 2 or 1)
 		if not str_find(str_sub(firstLetter, 1, 1), '%a') then -- First character must be either a + or a letter
-			return false, 7
+			return false, 6
 		end
 
 		return true
