@@ -15,6 +15,7 @@ local channels = {
 	["int-sent-only"] = "835519281427906611", -- #senti-only
 	["int-mod-utils"] = "865271568984440853", -- #mod-utils
 	["int-bad-names"] = "872921934818594826", -- #bad-names
+	["int-compromised-accounts"] = "872922245645889616", -- #compromised-accounts
 
 	-- Br Staff
 	["br-utils"] = "826082697185198140", -- #bot-utils

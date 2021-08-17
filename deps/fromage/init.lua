@@ -811,9 +811,8 @@ return function()
 			return false
 		end
 
-		local body, head = this.getPage(forumUri.conversations)
-		p("[FORUM DEBUG] isConnected", body, head.code)
-		local isAlive = not (string.find(body, htmlChunk.error_503) or string.find(body, htmlChunk.not_connected) or string.find(body, "<title>301 Moved Permanently</title>"))
+		local body = this.getPage(forumUri.conversations)
+		local isAlive = not (string.find(body, htmlChunk.error_503) or string.find(body, htmlChunk.not_connected))
 		if not isAlive then
 			newThis()
 		end

@@ -16,10 +16,12 @@ local discordChannels = require("../utils/discord-objects").channels
 ----------------------------------------------------------------------------------------------------
 
 local badNamesChannel = discordChannels["int-bad-names"]
+local compromisedAccountsChannel = discordChannels["int-compromised-accounts"]
 
 return {
 	channel = {
-		[badNamesChannel.id] = true
+		[badNamesChannel.id] = true,
+		--[compromisedAccountsChannel.id] = true,
 	},
 
 	syntax = "collate",
@@ -39,7 +41,12 @@ return {
 				"You don't have the permisison to use this command.")
 		end
 
-		local data = badName.validateAllEntries(message)
-		message.member:send(badName.getResponse(data))
+		if message.channel.id == badNamesChannel.id then
+			local data = badName.validateAllBadNameEntries(message)
+			message.member:send(badName.getResponse(data))
+		--elseif message.channel.id == compromisedAccountsChannel.id then
+		--	local data = badName.validateAllEntries(message)
+		--	message.member:send(badName.getResponse(data))
+		end
 	end
 }

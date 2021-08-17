@@ -61,7 +61,7 @@ do
 	}
 
 	local dataValidationPattern = {
-		nickname = "^(([%a%+])%a[%w_]+)#(%d%d%d%d)$",
+		nickname = "^(([%a%+])%w[%w_]+)#(%d%d%d%d)$",
 		tribename = "^[%w_'%- ][%w_'%- ][%w_'%- ]+$"
 	}
 
@@ -93,6 +93,11 @@ do
 
 		if tonumber(lastChar) then -- Cannot end with a number
 			return false, 6
+		end
+
+		local firstLetter = (firstCharacter == '+' and 2 or 1)
+		if not str_find(str_sub(firstLetter, 1, 1), '%a') then -- First character must be either a + or a letter
+			return false, 7
 		end
 
 		return true
@@ -140,7 +145,7 @@ do
 	end
 end
 
-local validateAllEntries = function(message)
+local validateAllBadNameEntries = function(message)
 	local data = {
 		nicknames = {
 			_count = 0,
@@ -279,6 +284,6 @@ discord:on("messageCreate", protect(function(message)
 end))
 
 return {
-	validateAllEntries = validateAllEntries,
+	validateAllBadNameEntries = validateAllBadNameEntries,
 	getResponse = getResponse
 }

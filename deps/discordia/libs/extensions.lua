@@ -48,26 +48,11 @@ function table.copy(tbl)
 	end
 	return ret
 end
---[[
+
 function table.deepcopy(tbl)
 	local ret = {}
 	for k, v in pairs(tbl) do
 		ret[k] = type(v) == 'table' and table.deepcopy(v) or v
-	end
-	return ret
-end
-]]
-function table.deepcopy(tbl)
-	local ret, isCircular = { }, false
-	for k, v in pairs(tbl) do
-		if k == "_G" then
-			isCircular = true
-		else
-			ret[k] = type(v) == "table" and table.deepcopy(v) or v
-		end
-	end
-	if isCircular then
-		ret._G = ret
 	end
 	return ret
 end
