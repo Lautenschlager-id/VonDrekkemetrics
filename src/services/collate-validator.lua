@@ -150,7 +150,7 @@ local identifyCompromisedAccountEntryType = function(entry)
 
 	local isValid, invalidCode = dataValidationPattern[dataTypes.nickname](parameters)
 	if not isValid then
-		p(str_format("[DEBUG] Compromissed account: %q %q", parameters, invalidCode))
+		p(str_format("[DEBUG] Compromised account: %q %q", parameters, invalidCode))
 		return target, true
 	end
 
@@ -239,7 +239,7 @@ end
 
 local getBadNameResponse = function(data)
 	return str_format("\z
-		**COLLATE** - %s\n\z
+		**BAD NAME COLLATE** - %s\n\z
 		\n\z
 		\n\z
 		__**Invalid**__\n\z
@@ -266,7 +266,7 @@ end
 
 local getCompromisedAccountResponse = function(data)
 	return str_format("\z
-		**COLLATE** - %s\n\z
+		**COMPROMISED ACCOUNT COLLATE** - %s\n\z
 		\n\z
 		\n\z
 		__**Invalid**__\n\z
