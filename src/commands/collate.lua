@@ -5,7 +5,7 @@ local roleFlags = require("../utils/guild-roles")
 local colors = require("../utils/enums/colors")
 local reactions = require("../utils/enums/reactions")
 
-local badName = require("../services/bad-name-validator")
+local collateValidator = require("../services/collate-validator")
 
 ------------------------------------------- Optimization -------------------------------------------
 
@@ -21,7 +21,7 @@ local compromisedAccountsChannel = discordChannels["int-compromised-accounts"]
 return {
 	channel = {
 		[badNamesChannel.id] = true,
-		--[compromisedAccountsChannel.id] = true,
+		[compromisedAccountsChannel.id] = true,
 	},
 
 	syntax = "collate",
@@ -41,12 +41,12 @@ return {
 				"You don't have the permisison to use this command.")
 		end
 
+		local data = collateValidator.validateAllEntries(message)
+
 		if message.channel.id == badNamesChannel.id then
-			local data = badName.validateAllBadNameEntries(message)
-			message.member:send(badName.getResponse(data))
-		--elseif message.channel.id == compromisedAccountsChannel.id then
-		--	local data = badName.validateAllEntries(message)
-		--	message.member:send(badName.getResponse(data))
+			message.member:send(collateValidator.getBadNameResponse(data))
+		elseif message.channel.id == compromisedAccountsChannel.id then
+			message.member:send(collateValidator.getCompromisedAccountResponse(data))
 		end
 	end
 }

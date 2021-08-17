@@ -31,8 +31,8 @@ require("./utils/guild-roles")
 -- Alert about data breaches
 require("./services/breach-alert")
 
--- Listen to #bad-names entries
-require("./services/bad-name-validator")
+-- Listen to collate entries
+require("./services/collate-validator")
 
 -- Commands
 require("./services/commands")
