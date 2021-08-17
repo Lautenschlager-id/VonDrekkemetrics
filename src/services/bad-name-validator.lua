@@ -90,7 +90,7 @@ do
 		end
 
 		local firstLetter = (firstCharacter == '+' and 2 or 1)
-		if not str_find(str_sub(firstLetter, 1, 1), '%a') then -- First character must be either a + or a letter
+		if not str_find(str_sub(name, firstLetter, firstLetter), '%a') then -- First character must be either a + or a letter
 			return false, 6
 		end
 
