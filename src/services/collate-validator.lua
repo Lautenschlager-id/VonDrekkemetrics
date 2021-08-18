@@ -256,10 +256,10 @@ local getBadNameResponse = function(data)
 		--------`\z
 	",
 		os_date(),
-		tbl_concat(data.nicknames.bad, '\n'),
-		tbl_concat(data.tribenames.bad, '\n'),
-		tbl_concat(data.nicknames, '\n'),
-		tbl_concat(data.tribenames, '\n')
+		tbl_concat(data[dataTypes.nickname].bad, '\n'),
+		tbl_concat(data[dataTypes.tribename].bad, '\n'),
+		tbl_concat(data[dataTypes.nickname], '\n'),
+		tbl_concat(data[dataTypes.tribename], '\n')
 	)
 end
 
@@ -279,8 +279,8 @@ local getCompromisedAccountResponse = function(data)
 		--------`\z
 	",
 		os_date(),
-		tbl_concat(data.compromised.bad, '\n'),
-		tbl_concat(data.compromised, '\n')
+		tbl_concat(data[dataTypes.compromised].bad, '\n'),
+		tbl_concat(data[dataTypes.compromised], '\n')
 	)
 end
 
