@@ -238,7 +238,7 @@ local validateAllEntries = function(message)
 end
 
 local getBadNameResponse = function(data)
-	str_format("\z
+	return str_format("\z
 		**BAD NAME COLLATE** - %s\n\z
 		\n\z
 		\n\z
