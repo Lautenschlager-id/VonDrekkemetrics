@@ -196,7 +196,8 @@ end
 
 local validateAllEntries = function(message)
 	local data, identifier =
-		(message.channel == badNameChannel.id and validateBadName or validateCompromisedAccount)()
+		(message.channel.id == badNameChannel.id and validateBadName
+			or validateCompromisedAccount)()
 
 	local messages = getPreviouMessages(message)
 
@@ -237,7 +238,7 @@ local validateAllEntries = function(message)
 end
 
 local getBadNameResponse = function(data)
-	return str_format("\z
+	str_format("\z
 		**BAD NAME COLLATE** - %s\n\z
 		\n\z
 		\n\z
