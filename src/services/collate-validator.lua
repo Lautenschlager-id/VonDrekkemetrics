@@ -14,6 +14,7 @@ local os_date = os.date
 
 local str_find = string.find
 local str_format = string.format
+local str_gsub = string.gsub
 local str_match = string.match
 local str_split = string.split
 local str_sub = string.sub
@@ -56,7 +57,7 @@ local dataTypes = {
 
 local dataArgumentPattern = {
 	[dataTypes.nickname] = "^(%S+)%s+(%S+)$",
-	[dataTypes.tribename] = "^\"(.-)\"%s+\"(.-)\"$",
+	[dataTypes.tribename] = "^[\"“”]+(.-)[\"“”]+%s+[\"“”]+(.-)[\"“”]+$",
 	[dataTypes.compromised] = "^(%S+)$"
 }
 
@@ -99,21 +100,23 @@ dataValidationPattern[dataTypes.nickname] = function(value, id)
 end
 
 dataValidationPattern[dataTypes.tribename] = function(value)
+	value = str_gsub(value, "[\"“”]+", '"')
+
 	if not str_find(value, dataValidationPattern.tribename) then -- Must be valid
-		return false, 1
+		return false, 1, value
 	end
 
 	if #value < 3 or #value > 50 then -- Must be 3 to 50 characters long
-		return false, 2
+		return false, 2, value
 	end
 
-	return true
+	return true, value
 end
 
 local identifyBadNameEntryType = function(entry)
 	-- For each entry
 	local isNickname = str_find(entry, '#', 1, true) and dataTypes.nickname
-	local isTribename = str_find(entry, "[\"']") and dataTypes.tribename
+	local isTribename = str_find(entry, "[\"“”]+") and dataTypes.tribename
 
 	local target = isNickname or isTribename
 
@@ -126,17 +129,18 @@ local identifyBadNameEntryType = function(entry)
 		return dataTypes.unknown
 	end
 
-	local isValid, invalidCode
+	local isValid, invalidCode, formattedValue
 	for id, value in next, parameters do
-		isValid, invalidCode = dataValidationPattern[target](value, id)
+		isValid, invalidCode, formattedValue = dataValidationPattern[target](value, id)
+		entry = formattedValue or entry
 
 		if not isValid then
 			p(str_format("[DEBUG] Bad Name: %q %q %q", entry, target, invalidCode))
-			return target, true
+			return target, true, entry
 		end
 	end
 
-	return target, false
+	return target, false, entry
 end
 
 local identifyCompromisedAccountEntryType = function(entry)
@@ -201,7 +205,7 @@ local validateAllEntries = function(message)
 
 	local messages = getPreviouMessages(message)
 
-	local message, dataType, isBad, entries, entry, dataArr
+	local message, dataType, isBad, entries, entry, dataArr, tmpEntry
 	for msg = 1, #messages do
 		message = messages[msg]
 
@@ -215,7 +219,7 @@ local validateAllEntries = function(message)
 		for e = 1, #entries do
 			entry = entries[e]
 
-			dataType, isBad = identifier(entry)
+			dataType, isBad, tmpEntry = identifier(entry)
 
 			dataArr = data[dataType]
 			if isBad then
@@ -223,7 +227,7 @@ local validateAllEntries = function(message)
 			end
 
 			dataArr._count = dataArr._count + 1
-			dataArr[dataArr._count] = entry
+			dataArr[dataArr._count] = tmpEntry or entry
 
 			if not hasBad then
 				hasBad = isBad or dataType == dataTypes.unknown
