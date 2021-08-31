@@ -812,7 +812,7 @@ return function()
 		end
 
 		local body = this.getPage(forumUri.conversations)
-		local isAlive = not (string.find(body, htmlChunk.error_503) or string.find(body, htmlChunk.not_connected))
+		local isAlive = not (string.find(body, htmlChunk.error_503) or string.find(body, htmlChunk.not_connected) or string.find(body, "<title>301 Moved Permanently</title>"))
 		p("isConnectionAlive", body)
 		if not isAlive then
 			p("[internal] not connected, reconnecting")
