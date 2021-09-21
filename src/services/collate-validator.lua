@@ -74,7 +74,7 @@ dataValidationPattern[dataTypes.nickname] = function(value, id)
 	end
 
 	if id == 2 then
-		if tag * 1 <= 100 then -- Tag must be > 100
+		if tag * 1 <= 99 then -- Tag must be > 100
 			return false, 2
 		end
 	end
