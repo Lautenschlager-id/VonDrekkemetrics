@@ -62,7 +62,7 @@ local dataArgumentPattern = {
 }
 
 local dataValidationPattern = {
-	nickname = "^(([%a%+])%w[%w_]+)#(%d%d%d%d)$",
+	nickname = "^(([%a%+])[%w_][%w_]+)#(%d%d%d%d)$",
 	tribename = "^[%w_'%- ][%w_'%- ][%w_'%- ]+$"
 }
 
