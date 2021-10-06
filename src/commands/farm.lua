@@ -54,7 +54,7 @@ return {
 
 		local registeredAccounts, sourisAccounts, IPs = filter(parameters, "((%*?)%S+) / (#%S+)")
 		if not next(IPs) then
-			registeredAccounts, sourisAccounts, IPs = filter(parameters, "((%*?)[^%(%)%s]+)")
+			registeredAccounts, sourisAccounts, IPs = filter(parameters, "%f[%S]((%*?)[^%(%)%s]+)")
 		end
 
 		local ipArr, ipIndex = { }, 0
