@@ -13,11 +13,11 @@ local table_concat = table.concat
 
 ----------------------------------------------------------------------------------------------------
 
-local filter = function(p)
+local filter = function(parameters, p)
 	local registeredAccounts, sourisAccounts, IPs = { }, { }, { }
 	local regIndex, souIndex = 0, 0
 
-	for name, isSouris, ip in str_gmatch(parameters, "((%*?)%S+) / (#%S+)") do
+	for name, isSouris, ip in str_gmatch(parameters, p) do
 		if isSouris ~= '' then
 			souIndex = souIndex + 1
 			sourisAccounts[souIndex] = name
@@ -50,9 +50,9 @@ return {
 			split = ' '
 		end
 
-		local registeredAccounts, sourisAccounts, IPs = filter("((%*?)%S+) / (#%S+)")
+		local registeredAccounts, sourisAccounts, IPs = filter(parameters, "((%*?)%S+) / (#%S+)")
 		if not next(IPs) then
-			registeredAccounts, sourisAccounts, IPs = filter("((%*?)%S+) %(")
+			registeredAccounts, sourisAccounts, IPs = filter(parameters, "((%*?)[^%(%)%s]+)")
 		end
 
 		local ipArr, ipIndex = { }, 0
