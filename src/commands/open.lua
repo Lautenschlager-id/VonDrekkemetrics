@@ -34,6 +34,8 @@ local changeTopicState = function(message, locked)
 
 	if err or not string_find(result, "\"redirection\"") then
 		reaction = reactions.dnd
+	elseif not locked then
+		message:reply("Unlocked: **<https://atelier801.com/topic?f=5&t=788911>**")
 	end
 
 	message:clearReactions()
