@@ -26,7 +26,9 @@ local filter = function(parameters, p)
 			registeredAccounts[regIndex] = name
 		end
 
-		IPs[ip] = true
+		if ip then
+			IPs[ip] = true
+		end
 	end
 
 	return registeredAccounts, sourisAccounts, IPs
