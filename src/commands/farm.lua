@@ -13,6 +13,25 @@ local table_concat = table.concat
 
 ----------------------------------------------------------------------------------------------------
 
+local filter = function(p)
+	local registeredAccounts, sourisAccounts, IPs = { }, { }, { }
+	local regIndex, souIndex = 0, 0
+
+	for name, isSouris, ip in str_gmatch(parameters, "((%*?)%S+) / (#%S+)") do
+		if isSouris ~= '' then
+			souIndex = souIndex + 1
+			sourisAccounts[souIndex] = name
+		else
+			regIndex = regIndex + 1
+			registeredAccounts[regIndex] = name
+		end
+
+		IPs[ip] = true
+	end
+
+	return registeredAccounts, sourisAccounts, IPs
+end
+
 return {
 	channel = {
 		[discordChannels["br-mod-utils"].id] = true,
@@ -31,19 +50,9 @@ return {
 			split = ' '
 		end
 
-		local registeredAccounts, sourisAccounts, IPs = { }, { }, { }
-		local regIndex, souIndex = 0, 0
-
-		for name, isSouris, ip in str_gmatch(parameters, "((%*?)%S+) / (#%S+)") do
-			if isSouris ~= '' then
-				souIndex = souIndex + 1
-				sourisAccounts[souIndex] = name
-			else
-				regIndex = regIndex + 1
-				registeredAccounts[regIndex] = name
-			end
-
-			IPs[ip] = true
+		local registeredAccounts, sourisAccounts, IPs = filter("((%*?)%S+) / (#%S+)")
+		if not next(IPs) then
+			registeredAccounts, sourisAccounts, IPs = filter("((%*?)%S+) %(")
 		end
 
 		local ipArr, ipIndex = { }, 0
