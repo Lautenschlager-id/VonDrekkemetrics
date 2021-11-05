@@ -1699,7 +1699,7 @@ return function()
 		assertion("getMessage", { "number", "string" }, 1, postId)
 		assertion("getMessage", "table", 2, location)
 
-		local pageNumber = math.ceil(tonumber(postId) / 20)
+		local pageNumber = location.p or math.ceil(tonumber(postId) / 20)
 
 		local body = _body or this.getPage((location.co and (forumUri.conversation .. "?co=" .. location.co) or (forumUri.topic .. "?f=" .. location.f .. "&t=" .. location.t)) .. "&p=" .. pageNumber)
 
@@ -1727,8 +1727,12 @@ return function()
 
 			local canLike = not not string.find(post, string.format(htmlChunk.hidden_value, 'm'))
 
+			local avatar, id = string.match(post, htmlChunk.profile_avatar)
+
 			return {
 				author = author .. authorDiscriminator,
+				authorAvatar = avatar,
+				authorId = id,
 				canLike = canLike,
 				content = content,
 				contentHtml = contentHtml,
