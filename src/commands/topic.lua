@@ -23,10 +23,47 @@ local tostring = tostring
 
 ----------------------------------------------------------------------------------------------------
 
+local htmlToMarkdown = function(str)
+	str = string.gsub(str, "&#(%d+);", function(dec) return string.char(dec) end)
+	str = string.gsub(str, '<span style="(.-);">(.-)</span>', function(x, content)
+		local markdown = ""
+		if x == "font-weight:bold" then
+			markdown = "**"
+		elseif x == "font-style:italic" then
+			markdown = '_'
+		elseif x == "text-decoration:underline" then
+			markdown = "__"
+		elseif x == "text-decoration:line-through" then
+			markdown = "~~"
+		end
+		return markdown .. content .. markdown
+	end)
+	str = string.gsub(str, '<p style="text-align:.-;">(.-)</p>', "%1")
+	str = string.gsub(str, '<blockquote.->(.-)<div>(.-)</div></blockquote>', function(name, content)
+		local m = string.match(name, "<small>(.-)</small>")
+		return (m and ("`" .. m .. "`\n") or "") .. "```\n" .. (#content > 50 and string.sub(content, 1, 50) .. "..." or content) .. "```"
+	end)
+	str = string.gsub(str, '<a href="(.-)".->(.-)</a>', "[%2](%1)")
+	str = string.gsub(str, "<br ?/?>", "\n")
+	str = string.gsub(str, "&gt;", '>')
+	str = string.gsub(str, "&lt;", '<')
+	str = string.gsub(str, "&quot;", "\"")
+	str = string.gsub(str, "&laquo;", '«')
+	str = string.gsub(str, "&raquo;", '»')
+	str = string.gsub(str, '<div class="cadre cadre%-code">(.-)<div class="contenu.-<pre class="colonne%-lignes%-code">(.-)</pre></div></div>', function(language, code)
+		language = string.match(language, '<div class="indication%-langage%-code">(.-) code</div><hr/>') or ''
+		code = string.gsub(code, "<span .->(.-)</span>", "%1")
+		return "```" .. language .. "\n" .. code .. "```"
+	end)
+	return str
+end
+
 return {
-	syntax = "topic [`url`]*",
+	syntax = "topic [`url`]",
 
 	description = "Displays a forum message.",
+
+	usesForum = true,
 
 	execute = function(self, message, parameters)
 		parameters = tostring(parameters)
@@ -66,7 +103,8 @@ return {
 			},
 			[2] = {
 				name = "Message #" .. data.num_id,
-				value = str_sub((fMessage.content or fMessage.contentHtml), 1, 1000),
+				value = str_sub((fMessage.contentHtml and htmlToMarkdown(fMessage.contentHtml)
+					or fMessage.content), 1, 1000),
 				inline = false
 			}
 		}
