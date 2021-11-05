@@ -124,6 +124,8 @@ local checkCommandAttempt = function(message)
 	end
 end
 
+local hasTriggered = { }
+
 ----------------------------------------------------------------------------------------------------
 
 discord:once("ready", protect(loadCommands))
@@ -138,6 +140,12 @@ discord:on("messageCreate", protect(function(message)
 	-- Private message
 	if message.channel.type == 1 then return end
 
+	if hasTriggered[message.id] then
+		return
+	end
+	hasTriggered[message.id] = message.content
+
+	p("[DEBUG] checking command attempt", message.content, message.id)
 	checkCommandAttempt(message)
 end))
 
@@ -150,6 +158,9 @@ end))
 
 discord:on("messageUpdate", protect(function(message)
 	discord:emit("messageDelete", message)
+	if message.content ~= hasTriggered[message.id] then
+		hasTriggered[message.id] = nil
+	end
 	discord:emit("messageCreate", message)
 end))
 
