@@ -37,5 +37,8 @@ require("./services/collate-validator")
 -- Commands
 require("./services/commands")
 
+-- Pin Tig's patches
+require("./services/tig-pin")
+
 --[[ Init ]]--
 discord:run(secrets.DISCORD_TOKEN)
