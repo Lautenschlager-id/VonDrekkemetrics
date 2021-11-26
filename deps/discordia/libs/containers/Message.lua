@@ -362,6 +362,18 @@ function Message:reply(content)
 	return self._parent:send(content)
 end
 
+function Message:unofficialCreateThread(name, auto_archive_duration)
+	local data, err = self.client._api:unofficialCreateThread(self._parent._id, self._id, {
+		name = name,
+		auto_archive_duration = auto_archive_duration
+	})
+	if data then
+		return true
+	else
+		return false, err
+	end
+end
+
 --[=[@p reactions Cache An iterable cache of all reactions that exist for this message.]=]
 function get.reactions(self)
 	if not self._reactions then

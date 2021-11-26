@@ -1,4 +1,4 @@
-local commands = require("../services/commands")
+local commands = require("../services/commands").commands
 
 local temporaryObject = require("../utils/temporaryObject")
 

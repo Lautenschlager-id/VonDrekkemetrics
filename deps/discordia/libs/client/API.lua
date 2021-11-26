@@ -122,14 +122,14 @@ function API:authenticate(token)
 	return self:getCurrentUser()
 end
 
-function API:request(method, endpoint, payload, query, files)
+function API:request(method, endpoint, payload, query, files, _baseURL)
 
 	local _, main = running()
 	if main then
 		return error('Cannot make HTTP request outside of a coroutine', 2)
 	end
 
-	local url = BASE_URL .. endpoint
+	local url = (_baseURL or BASE_URL) .. endpoint
 
 	if query and next(query) then
 		url = {url}
@@ -684,6 +684,11 @@ end
 function API:executeSlackCompatibleWebhook(webhook_id, webhook_token, payload) -- not exposed, needs webhook client
 	local endpoint = f(endpoints.WEBHOOK_TOKEN_SLACK, webhook_id, webhook_token)
 	return self:request("POST", endpoint, payload)
+end
+
+function API:unofficialCreateThread(channel_id, message_id, payload)
+	local endpoint = f("/channels/%s/messages/%s/threads", channel_id, message_id)
+	return self:request("POST", endpoint, payload, nil, nil, "https://discord.com/api/v9")
 end
 
 function API:executeGitHubCompatibleWebhook(webhook_id, webhook_token, payload) -- not exposed, needs webhook client

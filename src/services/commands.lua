@@ -157,11 +157,16 @@ discord:on("messageDelete", protect(function(message)
 end))
 
 discord:on("messageUpdate", protect(function(message)
-	discord:emit("messageDelete", message)
 	if message.content ~= hasTriggered[message.id] then
 		hasTriggered[message.id] = nil
+	else
+		return
 	end
+	discord:emit("messageDelete", message)
 	discord:emit("messageCreate", message)
 end))
 
-return commands
+return {
+	commands = commands,
+	hasTriggered = hasTriggered
+}
