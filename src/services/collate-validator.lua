@@ -128,6 +128,7 @@ local identifyBadNameEntryType = function(entry)
 	if #parameters == 0 then
 		return dataTypes.unknown
 	end
+	entry = tbl_concat(parameters, " ")
 
 	local isValid, invalidCode, formattedValue
 	for id, value in next, parameters do
