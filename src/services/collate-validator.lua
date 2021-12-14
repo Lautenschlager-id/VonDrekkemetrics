@@ -128,7 +128,7 @@ local identifyBadNameEntryType = function(entry)
 	if #parameters == 0 then
 		return dataTypes.unknown
 	end
-	entry = tbl_concat(parameters, " ")
+	entry = str_gsub(entry, "  +", " ")
 
 	local isValid, invalidCode, formattedValue
 	for id, value in next, parameters do
