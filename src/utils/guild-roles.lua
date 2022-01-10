@@ -23,6 +23,7 @@ local createGuildRoleFlags = function()
 
 		for role in roles:iter() do
 			local position = rolesCount - role.position
+
 			rFlags[position] = role
 			rFlags[role.name:lower()] = role
 		end

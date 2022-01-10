@@ -37,7 +37,7 @@ return {
 		local roleFlags = roleFlags[message.guild.id]
 		if not roleFlags then
 			return utils.sendError(message, "LIST", "Forbidden command.",
-				"This server is not ready to use this comand.")
+				"This server is not ready to use this command.")
 		end
 
 		local listFlags = { }

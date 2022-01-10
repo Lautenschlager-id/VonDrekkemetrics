@@ -9,6 +9,7 @@ local discordChannels = require("../utils/discord-objects").channels
 return {
 	channel = {
 		[discordChannels["br-utils"].id] = true,
+		[discordChannels["int-main"].id] = true,
 		[discordChannels["int-sent-only"].id] = true
 	},
 
