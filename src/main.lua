@@ -40,5 +40,8 @@ require("./services/commands")
 -- Pin Tig's patches
 --require("./services/tig-pin")
 
+-- Listen for #karma reports in BR
+require("./services/karma-br-report")
+
 --[[ Init ]]--
 discord:run(secrets.DISCORD_TOKEN)
