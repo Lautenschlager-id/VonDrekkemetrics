@@ -12,7 +12,6 @@ local forum, fromage = _forum.forum, _forum.fromage
 
 ----------------------------------------------------------------------------------------------------
 
-
 --[[ Connect ]]--
 discord:once("ready", protect(function()
 	p("[DISCORD] OK")
@@ -40,8 +39,8 @@ require("./services/commands")
 -- Pin Tig's patches
 --require("./services/tig-pin")
 
--- Listen for #karma reports in BR
-require("./services/karma-br-report")
+-- Listen for #karma and #evento reports in BR
+require("./services/chat-policies-br-report")
 
 --[[ Init ]]--
 discord:run(secrets.DISCORD_TOKEN)

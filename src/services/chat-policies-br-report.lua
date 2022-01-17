@@ -12,6 +12,7 @@ discord:on("messageCreate", protect(function(message)
 	if message.channel.id ~= channels["shades-bridge"].id then return end
 
 	channels["br-report"]:send({
+		content = message.content,
 		embed = message.embed
 	})
 
