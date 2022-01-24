@@ -35,9 +35,9 @@ local getPreviouMessages = function(message)
 	local messages = message.channel
 		:getMessagesBefore(message.id, 100)
 		:toArray()
+
 	tbl_sort(messages, sortByCreatedAt)
 	return messages
-
 end
 
 local splitEntryIntoEntries = function(content)

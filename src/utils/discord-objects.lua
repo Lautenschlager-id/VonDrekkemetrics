@@ -37,7 +37,9 @@ local guilds = {
 local getChannelAndGuildObjects = function()
 	p("[LOAD] Get Channel and Guild Objects")
 	for name, id in next, channels do
-		channels[name] = discord:getChannel(id)
+		repeat
+			channels[name] = discord:getChannel(id)
+		until channels[name]
 		name = channels[name]
 
 		-- Populates Guilds as well
