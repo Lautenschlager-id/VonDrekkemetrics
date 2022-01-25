@@ -39,8 +39,8 @@ require("./services/commands")
 -- Pin Tig's patches
 --require("./services/tig-pin")
 
--- Listen for #karma and #evento reports in BR
-require("./services/chat-policies-br-report")
+-- Listen for chat reports from Shades to be reported
+require("./services/chat-policies-report")
 
 --[[ Init ]]--
 discord:run(secrets.DISCORD_TOKEN)
