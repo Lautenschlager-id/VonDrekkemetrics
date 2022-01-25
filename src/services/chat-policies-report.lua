@@ -50,6 +50,7 @@ discord:on("messageCreate", protect(function(message)
 	else
 		msg.embed = message.embed
 	end
+	p("[DEBUG] Post Rule Processor Report", channelToPost.name, msg)
 
 	channelToPost:send(msg)
 
