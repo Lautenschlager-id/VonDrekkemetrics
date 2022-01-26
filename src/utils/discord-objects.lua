@@ -17,6 +17,7 @@ local channels = {
 	["int-bad-names"] = "872921934818594826", -- #bad-names
 	["int-compromised-accounts"] = "872922245645889616", -- #compromised-accounts
 	["int-patch-notes"] = "902137628718145557", -- #patch-notes
+	["int-report"] = "935823003332263936", -- #reports-auto
 
 	-- Br Staff
 	["br-utils"] = "826082697185198140", -- #bot-utils

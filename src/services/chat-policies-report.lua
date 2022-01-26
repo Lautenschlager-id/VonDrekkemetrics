@@ -10,12 +10,12 @@ local channels = require("../utils/discord-objects").channels
 
 local boundChannels = {
 	karma = {
-		xx = "debug",
+		xx = "int-report",
 		br = "br-report"
 	},
 
 	event = {
-		xx = "debug",
+		xx = "int-report",
 		br = "br-report"
 	},
 
