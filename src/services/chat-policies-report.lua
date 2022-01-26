@@ -45,7 +45,7 @@ discord:on("messageCreate", protect(function(message)
 	local msg = {
 		allowed_mentions = { parse = { } }
 	}
-	if meta[3] then
+	if meta[3] == "true" then
 		msg.content = message.embed.description
 	else
 		msg.embed = message.embed
