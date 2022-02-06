@@ -43,10 +43,16 @@ return {
 
 		local data = collateValidator.validateAllEntries(message)
 
+		local response
 		if message.channel.id == badNamesChannel.id then
-			message.member:send(collateValidator.getBadNameResponse(data))
+			response = collateValidator.getBadNameResponse(data)
 		elseif message.channel.id == compromisedAccountsChannel.id then
-			message.member:send(collateValidator.getCompromisedAccountResponse(data))
+			response = collateValidator.getCompromisedAccountResponse(data)
+		end
+
+		response = utils.splitByLine(response)
+		for line = 1, #response do
+			message.member:send(response[line])
 		end
 	end
 }
