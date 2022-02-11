@@ -67,4 +67,4 @@ discord:on("messageCreate", protect(function(message)
 		content = "__Wag's bridge__ ↓",
 		embed = message.embed
 	})
-end)
+end))
