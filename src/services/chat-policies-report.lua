@@ -61,6 +61,8 @@ discord:on("messageCreate", protect(function(message)
 	-- Wag's karma bot
 	if message.author.id ~= "261628653727776769" or not message.embed then return end
 
+	p("[DEBUG] Received message from Wag's bot")
+
 	channels["br-report"]:send({
 		content = "__Wag's bridge__ ↓",
 		embed = message.embed
