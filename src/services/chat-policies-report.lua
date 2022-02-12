@@ -59,7 +59,8 @@ end))
 
 discord:on("messageCreate", protect(function(message)
 	-- Wag's karma bot
-	if message.author.id ~= "261628653727776769" or not message.embed then return end
+	if message.channel.id ~= channels["wag-bridge"].id then return end
+	if not message.embed then return end
 
 	p("[DEBUG] Received message from Wag's bot")
 
@@ -67,4 +68,6 @@ discord:on("messageCreate", protect(function(message)
 		content = "__Wag's bridge__ ↓",
 		embed = message.embed
 	})
+
+	message:delete()
 end))
