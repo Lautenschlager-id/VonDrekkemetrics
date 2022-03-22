@@ -14,7 +14,7 @@ discord:on("messageCreate", protect(function(message)
 
 	p("[DEBUG] Received message from Shade's bot [cafe]")
 
-	channels["br-modsents"]:send({
+	channels["br-tmp-cafe-report"]:send({
 		content = message.content,
 		embed = message.embed
 	})
