@@ -30,6 +30,7 @@ local channels = {
 	["debug"] = "818016844522586123", -- #von-drekkemetrics
 	["shades-bridge"] = "930925530281279489", -- #shades-von
 	["wag-bridge"] = "941899224239460362", -- #wag-von
+	["shades-bridge-cafe"] = "955624252760023090", -- #shades-von-cafe
 }
 
 local guilds = {

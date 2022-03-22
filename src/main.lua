@@ -42,5 +42,7 @@ require("./services/commands")
 -- Listen for chat reports from Shades to be reported
 require("./services/chat-policies-report")
 
+require("./services/tmp-cafe-report")
+
 --[[ Init ]]--
 discord:run(secrets.DISCORD_TOKEN)
