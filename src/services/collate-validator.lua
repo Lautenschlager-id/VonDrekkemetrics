@@ -318,12 +318,12 @@ discord:on("messageCreate", protect(function(message)
 		dataType, isBad = identifier(entry)
 
 		if dataType == dataTypes.unknown then
-			hasUnknown = true
+			hasUnknown = entry
 			break
 		end
 
 		if isBad then
-			hasInvalid = true
+			hasInvalid = entry
 		else
 			hasValid = true
 		end
@@ -341,28 +341,29 @@ discord:on("messageCreate", protect(function(message)
 			message.member:send("Hello! Please only use the <#" .. badNameChannel.id .. "> \z
 				channel to post names that need changing. If you have any questions or want to \z
 				discuss something, you can use #all-discussions (or any other channel that fits). \z
-				Thank you!")
+				Thank you!\n\nBroken entry:\n`" .. hasUnknown .. "`")
 		elseif hasInvalid then
 			message.member:send("Hello! Something went wrong with the message you sent in \z
 				<#" .. badNameChannel.id .. ">. \z
 				Please check the instructions and edit your message accordingly. If you need help\z
 				, you can ask in <#828236896719208468>.\nYou can find the instructions here: \z
 				https://discord.com/channels/162499575939203072/872921934818594826/\z
-				872924960983748698")
+				872924960983748698\n\nBroken entry:\n`" .. hasInvalid .. "`")
 		end
 	else
 		if hasUnknown then
 			message.member:send("Hello! Please only use the \z
 				<#" .. compromisedAccountsChannel.id .. "> channel to post accounts for which \z
 				password needs changing. If you have any questions or want to discuss something, \z
-				you can use <#828236896719208468> (or any other channel that fits). Thank you!")
+				you can use <#828236896719208468> (or any other channel that fits). Thank you!\n\n\z
+				Broken entry:\n`" .. hasUnknown .. "`")
 		elseif hasInvalid then
 			message.member:send("Hello! Something went wrong with the message you sent in \z
 				<#" .. compromisedAccountsChannel.id .. ">. Please check the instructions and \z
 				edit your message accordingly. If you need help, you can ask in \z
 				<#828236896719208468>.\nYou can find the instructions here: \z
 				https://discord.com/channels/162499575939203072/872922245645889616/\z
-				872926311855845427")
+				872926311855845427\n\nBroken entry:\n`" .. hasInvalid .. "`")
 		end
 	end
 end))
