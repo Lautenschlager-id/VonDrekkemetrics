@@ -8,4 +8,5 @@ return {
 	unlocked = "🔓",
 	question = "❓",
 	checkpoint = "🏁",
+	no_pedestrians = "🚷"
 }

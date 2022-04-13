@@ -24,8 +24,8 @@ local channels = {
 	["br-mod-utils"] = "864920454192300042", -- #mod-utils
 	["br-senti"] = "421763072722599967", -- #sentinelas
 	["br-modsents"] = "727175201552466010", -- #modsents
-	["br-report"] = "421763648252542976", -- #aovivonojogo
-	["br-tmp-cafe-report"] = "955631654943207454", -- #cafe
+	["br-report-forum"] = "421763630191607808", -- #forum
+	["br-report-game"] = "421763648252542976", -- #aovivonojogo
 
 	-- Debug
 	["debug"] = "818016844522586123", -- #von-drekkemetrics

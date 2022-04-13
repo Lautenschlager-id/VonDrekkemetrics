@@ -11,24 +11,24 @@ local channels = require("../utils/discord-objects").channels
 local boundChannels = {
 	karma = {
 		xx = "int-report",
-		br = "br-report"
+		br = "br-report-game"
 	},
 
 	event = {
 		xx = "int-report",
-		br = "br-report"
+		br = "br-report-game"
 	},
 
 	evento = {
-		xx = "br-report"
+		xx = "br-report-game"
 	},
 
 	br = {
-		xx = "br-report"
+		xx = "br-report-game"
 	},
 
 	pt = {
-		xx = "br-report"
+		xx = "br-report-game"
 	},
 }
 
@@ -64,7 +64,7 @@ discord:on("messageCreate", protect(function(message)
 
 	p("[DEBUG] Received message from Wag's bot")
 
-	channels["br-report"]:send({
+	channels["br-report-game"]:send({
 		content = "__Wag's bridge__ ↓",
 		embed = message.embed
 	})

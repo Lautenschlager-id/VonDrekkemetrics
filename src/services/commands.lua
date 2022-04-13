@@ -36,7 +36,8 @@ local commands = {
 	["open"] = true,
 	["farm"] = true,
 	["collate"] = true,
-	["topic"] = true
+	["topic"] = true,
+	["avatar"] = true
 }
 
 --[[
