@@ -1,4 +1,4 @@
-local activityStruct = require("../commands/struct/activity")
+local activityStruct = require("./struct/activity")
 
 ------------------------------------------- Optimization -------------------------------------------
 

@@ -6,8 +6,6 @@ local colors = require("../../utils/enums/colors")
 
 ------------------------------------------- Optimization -------------------------------------------
 
-local discordChannels = require("../../utils/discord-objects").channels
-
 local forum = require("../../forum").forum
 
 local json_encode = require("json").encode

@@ -1,3 +1,5 @@
+local utils = require("../utils/utils")
+
 ------------------------------------------- Optimization -------------------------------------------
 
 local forum = require("../forum").forum
@@ -65,6 +67,9 @@ local sanctionTypes = {
 		["mutemessage"] = true,
 		["profile"] = true,
 		["report"] = true
+	},
+	avatarOnly = {
+		["avatar"] = true
 	}
 }
 
@@ -122,7 +127,7 @@ local normalizeBodyData = function(registry, accordionName, playerName)
 		registry.isDeleted = registry.MessageState == "supprime"
 
 		if registry.Author then
-			registry.Author = str_gsub(registry.Author, "%%23", '#', 1)
+			registry.Author = utils.encodedToReadableNickname(registry.Author)
 		end
 		registry.Reason = str_gsub(registry.Reason, "<.->", '')
 
@@ -295,7 +300,7 @@ do
 	end
 
 	getActivityData = function(playerName, role, targetDate)
-		local queryPlayerName = str_gsub(playerName, '#', "%%23", 1)
+		local queryPlayerName = utils.readableToEncodedNickname(playerName)
 		return _getActivityData(queryPlayerName, role, targetDate, 1, { }, playerName)
 	end
 end
@@ -304,5 +309,6 @@ return {
 	getActivityData = getActivityData,
 	sanctionTypes = sanctionTypes,
 	ignorableState = ignorableState,
-	sentinelMiscTypes = sentinelMiscTypes
+	sentinelMiscTypes = sentinelMiscTypes,
+	getAccordion = getAccordion
 }

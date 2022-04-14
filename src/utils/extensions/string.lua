@@ -51,6 +51,15 @@ local splitByLine = function(content, max)
 	return data
 end
 
+local strAutoEllipsis = function(str, maxLength)
+	if #str <= maxLength then
+		return str
+	end
+
+	return str_sub(str, 1, maxLength - 3) .. "..."
+end
+
 return {
-	splitByLine = splitByLine
+	splitByLine = splitByLine,
+	strAutoEllipsis = strAutoEllipsis
 }

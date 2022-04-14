@@ -5,6 +5,7 @@ local encodeUrl = require("./encode").encodeUrl
 local http_request = require("coro-http").request
 
 local str_find = string.find
+local str_gsub = string.gsub
 local str_sub = string.sub
 
 ----------------------------------------------------------------------------------------------------
@@ -44,7 +45,21 @@ local validatePlayerList = function(nicknames, defaultTag)
 	end
 end
 
+local encodedToReadableNickname = function(nickname)
+	nickname = str_gsub(nickname, "%%23", '#', 1)
+	nickname = str_gsub(nickname, "%%2B", '+', 1)
+	return nickname
+end
+
+local readableToEncodedNickname = function(nickname)
+	nickname = str_gsub(nickname, '#', "%%23", 1)
+	nickname = str_gsub(nickname, "%+", "%%2B", 1)
+	return nickname
+end
+
 return {
 	isPlayer = isPlayer,
-	validatePlayerList = validatePlayerList
+	validatePlayerList = validatePlayerList,
+	encodedToReadableNickname = encodedToReadableNickname,
+	readableToEncodedNickname = readableToEncodedNickname
 }
