@@ -83,7 +83,7 @@ local displayAvatarCasier = function(message, playerName, data)
 			(
 				(dataObj.isPermanent and "Perm")
 				or
-				(str_format("% 3d", (dataObj.DurationInt or 0)) .. "h")
+				(str_format("%3d", (dataObj.DurationInt or 0)) .. "h")
 			),
 			utils.strAutoEllipsis(dataObj.Reason or '', 40)
 		)
