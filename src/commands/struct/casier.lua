@@ -63,12 +63,14 @@ local displayAvatarCasier = function(message, playerName, data)
 	local embed = {
 		embed = {
 			title = "<:bugs:964283404336103515> " .. playerName .. "'s avatars casier",
-			color = colors.fail
+			color = colors.error
 		}
 	}
 
 	if #data == 0 then
+		embed.embed.color = colors.fail
 		embed.embed.description = "No avatar sanction found in the last 6 months."
+
 		temporaryObject[message.id] = message:reply(embed)
 		return
 	end
