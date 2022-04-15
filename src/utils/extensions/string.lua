@@ -2,6 +2,7 @@
 
 local str_find = string.find
 local str_gmatch = string.gmatch
+local str_gsub = string.gsub
 local str_sub = string.sub
 
 local tonumber = tonumber
