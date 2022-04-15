@@ -56,7 +56,10 @@ local strAutoEllipsis = function(str, maxLength)
 		return str
 	end
 
-	return str_sub(str, 1, maxLength - 3) .. "..."
+	str = str_sub(str, 1, maxLength - 3)
+	str = str_gsub(str, "\\%d+", '')
+
+	return str .. "..."
 end
 
 return {
