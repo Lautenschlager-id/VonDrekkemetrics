@@ -52,8 +52,6 @@ local processActivityData = function(data, totalMonths)
 		end
 	end
 
-	p(newData)
-
 	tbl_sort(newData, sortBySourceDate)
 
 	return newData
@@ -92,7 +90,7 @@ local displayAvatarCasier = function(message, playerName, data)
 	end
 	data = tbl_concat(data, '\n')
 
-	local response, messages = utils.splitByLine(data), { }
+	local response, messages = utils.splitByLine(data, 1500), { }
 	for line = 1, #response do
 		embed.embed.description = "```\n" .. response[line] .. "```"
 

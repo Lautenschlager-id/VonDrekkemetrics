@@ -43,7 +43,6 @@ return {
 		end
 
 		data = casier.processActivityData(data, 6)
-		p(data)
 		casier.displayAvatarCasier(message, parameters, data)
 
 		message:addReaction(reactions.online)
