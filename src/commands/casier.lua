@@ -48,6 +48,8 @@ return {
 			end
 		end
 
+		parameters = utils.encodedToReadableNickname(parameters)
+
 		if not utils.isPlayer(parameters) then
 			message:addReaction(reactions.dnd)
 
