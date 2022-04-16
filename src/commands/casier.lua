@@ -9,6 +9,8 @@ local discordChannels = require("../utils/discord-objects").channels
 
 local forum = require("../forum").forum
 
+local str_match = string.match
+
 local tostring = tostring
 
 ----------------------------------------------------------------------------------------------------
