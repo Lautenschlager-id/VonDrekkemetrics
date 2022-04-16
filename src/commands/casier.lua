@@ -27,7 +27,25 @@ return {
 	usesForum = true,
 
 	execute = function(self, message, parameters)
-		parameters = tostring(parameters)
+		if not parameters then
+			-- If the command is triggered with a reply
+
+			local referencedMessage = message.referencedMessage
+			referencedMessage = referencedMessage
+				and referencedMessage.author.id == "707978214907052214" and referencedMessage or nil
+
+			if not referencedMessage then return end
+
+			local nickname = str_match(referencedMessage.content,
+				"^avatar: <https://atelier801%.com/profile%?pr=(%S+)>")
+
+			if nickname then
+				parameters = nickname
+			else
+				return
+			end
+		end
+
 		if not utils.isPlayer(parameters) then
 			message:addReaction(reactions.dnd)
 
