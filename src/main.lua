@@ -36,9 +36,6 @@ require("./services/collate-validator")
 -- Commands
 require("./services/commands")
 
--- Pin Tig's patches
---require("./services/tig-pin")
-
 -- Listen for chat reports from Shades to be reported
 require("./services/chat-policies-report")
 
